@@ -1,0 +1,131 @@
+<nav class="navbar">
+
+  <!-- Left: Logo -->
+  <div class="navbar-left">
+
+    <a href="#"
+       class="brand">
+
+      
+
+      <span class="brand-text">
+        BatiAlert
+      </span>
+
+    </a>
+
+  </div>
+
+  <!-- Middle: Navigation -->
+  <div class="navbar-center">
+
+    <a href="#"
+       class="nav-link protected-link">
+
+        Dashboard
+
+    </a>
+
+    <a href="#"
+       class="nav-link protected-link">
+
+        Schedule
+
+    </a>
+
+    <a href="#"
+       class="nav-link protected-link">
+
+        Calculator
+
+    </a>
+
+    <a href="#"
+       class="nav-link protected-link">
+
+        Notices
+
+    </a>
+
+</div>
+
+<span
+    id="authStatus"
+    data-auth="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
+</span>
+
+
+  <!-- Right: Profile -->
+  <div class="navbar-right">
+
+    {% if request.user.is_authenticated %}
+
+        <!-- Logged In User -->
+
+        <button
+            id="profileBtn"
+            class="profile-btn">
+
+            <div class="profile-avatar">
+
+                {{ request.user.username|first|upper }}
+
+            </div>
+
+            <span class="profile-name">
+
+                {{ request.user.username }}
+
+            </span>
+           <span class="dropdown-arrow">
+  ▼
+</span>
+        </button>
+
+        <div
+            id="profileDropdown"
+            class="profile-dropdown">
+
+            <a href="#">
+                My Profile
+            </a>
+
+            <a href="#">
+                Saved Setups
+            </a>
+
+            <a href="{% url "logout" %}">
+                Logout
+            </a>
+
+        </div>
+
+    {% else %}
+
+        <!-- Guest User -->
+
+        <div class="guest-actions">
+
+            <a
+                href="/users/login/"
+                class="nav-link">
+
+                Login
+
+            </a>
+
+            <a
+                href="/users/signup/"
+                class="nav-btn">
+
+                Sign Up
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</nav>
