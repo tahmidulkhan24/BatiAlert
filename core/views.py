@@ -6,3 +6,8 @@ def home(request):
         request,
         'base.html'
     )
+def schedule(request):
+    return render(
+        request,
+        'schedule.html'
+    )

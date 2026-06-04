@@ -170,3 +170,48 @@ if(authStatus){
   }
 
 }
+/* ==========================
+   SCHEDULE PAGE
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const button =
+    document.querySelector(
+      ".schedule-btn"
+    );
+
+    if(!button) return;
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        button.innerHTML =
+        "Loading...";
+
+        setTimeout(
+          function(){
+
+            button.innerHTML =
+            "View Schedule";
+
+            document
+            .getElementById(
+              "scheduleResults"
+            )
+            ?.scrollIntoView({
+              behavior:"smooth"
+            });
+
+          },
+          700
+        );
+
+      }
+    );
+
+  }
+);

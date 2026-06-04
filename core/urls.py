@@ -8,4 +8,9 @@ urlpatterns = [
         views.home,
         name='home'
     ),
+    path(
+        'schedule/',
+        views.schedule,
+        name='schedule'
+    )
 ]

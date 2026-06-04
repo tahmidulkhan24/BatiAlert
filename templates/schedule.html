@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="schedule-section">
+
+    <div class="schedule-container">
+
+        <div class="schedule-header">
+
+            <h1 class="schedule-title">
+                Load Shedding Schedule
+            </h1>
+
+            <p class="schedule-subtitle">
+                Select your area and view upcoming outages.
+            </p>
+
+        </div>
+
+        <!-- FILTER CARD -->
+
+        <div class="schedule-filter-card">
+
+            <form>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        District
+                    </label>
+
+                    <select class="form-input">
+                        <option>Kishoreganj</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Upazila
+                    </label>
+
+                    <select class="form-input">
+                        <option>Kishoreganj Sadar</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Area
+                    </label>
+
+                    <select class="form-input">
+                        <option>Harua</option>
+                    </select>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="schedule-btn">
+
+                    View Schedule
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- RESULT -->
+
+        <div id="scheduleResults">
+
+            <!-- NEXT OUTAGE -->
+
+            <div class="next-outage-card">
+
+                <div class="next-outage-top">
+
+                    <span class="live-dot"></span>
+
+                    <span>
+                        Next Outage
+                    </span>
+
+                </div>
+
+                <div class="countdown">
+
+                    Starts In
+
+                </div>
+
+                <div class="countdown-time">
+
+                    01h 34m
+
+                </div>
+
+                <div class="outage-meta">
+
+                    <div>
+
+                        <small>Start</small>
+
+                        <h3>06:00 PM</h3>
+
+                    </div>
+
+                    <div>
+
+                        <small>End</small>
+
+                        <h3>08:00 PM</h3>
+
+                    </div>
+
+                    <div>
+
+                        <small>Reason</small>
+
+                        <h3>Maintenance</h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TODAY -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Today
+                </h2>
+
+                <div class="schedule-item">
+
+                    <span>
+                        06:00 PM - 08:00 PM
+                    </span>
+
+                    <span class="badge">
+                        Load Shedding
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- TOMORROW -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Tomorrow
+                </h2>
+
+                <div class="schedule-item">
+
+                    <span>
+                        03:00 PM - 04:00 PM
+                    </span>
+
+                    <span class="badge">
+                        Maintenance
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- WEEKLY -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Weekly Schedule
+                </h2>
+
+                <div class="week-row">
+                    <span>Monday</span>
+                    <span>06 PM - 08 PM</span>
+                </div>
+
+                <div class="week-row">
+                    <span>Tuesday</span>
+                    <span>No Outage</span>
+                </div>
+
+                <div class="week-row">
+                    <span>Wednesday</span>
+                    <span>03 PM - 05 PM</span>
+                </div>
+
+                <div class="week-row">
+                    <span>Thursday</span>
+                    <span>No Outage</span>
+                </div>
+
+                <div class="week-row">
+                    <span>Friday</span>
+                    <span>08 PM - 10 PM</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
