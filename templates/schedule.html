@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="schedule-section">
+
+    <div class="schedule-container">
+
+        <div class="schedule-header">
+
+            <h1 class="schedule-title">
+                Load Shedding Schedule
+            </h1>
+
+            <p class="schedule-subtitle">
+                Select your area and view upcoming outages.
+            </p>
+
+        </div>
+
+        <!-- FILTER CARD -->
+
+        <div class="schedule-filter-card">
+
+            <form method="GET">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        District
+                    </label>
+
+                    <select
+                        id="district"
+                        name="district"
+                        class="form-input"
+                    >
+
+                    <option value="">
+                        Select District
+                    </option>
+
+                    {% for district in districts %}
+
+                    <option
+                        value="{{ district }}"
+                        {% if district == selected_district %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ district }}
+                    </option>
+
+                    {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Upazila
+                    </label>
+
+                    <select
+                        id="upazila"
+                        name="upazila"
+                        class="form-input"
+                    >
+                        <option value="">Select Upazila</option>
+                        {% for upazila in upazilas  %}
+                       <option value="{{ upazila }}"
+                        {% if upazila == selected_upazila %}
+                        selected
+                        {% endif %}
+                       >
+                        {{ upazila }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                    
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Area
+                    </label>
+
+                    <select
+                        id="area"
+                        name="area"
+                        class="form-input"
+                    >
+
+                    <option value="">
+                        Select Area
+                    </option>
+
+                    {% for area in areas %}
+
+                    <option
+                        value="{{ area.id }}"
+                        {% if area.id|stringformat:"s" == selected_area %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ area.area_name }}
+                    </option>
+
+                    {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="schedule-btn">
+
+                    View Schedule
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div id="scheduleResults">
+
+            <!-- NEXT OUTAGE -->
+
+            <div class="next-outage-card">
+
+                <div class="next-outage-top">
+
+                    <span class="live-dot"></span>
+
+                    <span>
+                        Next Outage
+                    </span>
+
+                </div>
+
+                <div class="countdown">
+
+                    Starts In
+
+                </div>
+
+                {% if next_outage %}
+
+                <div class="countdown-time">
+
+                     {{ countdown }}
+
+                </div>
+
+                <div class="outage-meta">
+
+                    <div>
+
+                        <small>Start</small>
+
+                        <h3>
+                            {{ next_outage.start_time}}
+                        </h3>
+
+                    </div>
+
+                    <div>
+
+                        <small>End</small>
+
+                        <h3>
+                            {{ next_outage.end_time }}
+                        </h3>
+
+                    </div>
+
+                    <div>
+
+                        <small>Reason</small>
+
+                        <h3>
+                             {{ next_outage.reason|default:"N/A" }}
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="countdown-time">
+
+                    No Outage
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- TODAY -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Today
+                </h2>
+                 {% for schedule in today_schedules %}
+                <div class="schedule-item">
+
+                    <span>
+                        {{ schedule.start_time }} - {{ schedule.end_time }}
+                    </span>
+
+                    <span class="badge">
+                        {{ schedule.reason }}
+                    </span>
+                </div>
+                {% empty %}
+
+                <div class="schedule-item">
+
+                    <span>
+
+                        No Schedule Today
+
+                    </span>
+
+                </div>
+
+             {% endfor %}
+            </div>
+
+            <!-- TOMORROW -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Tomorrow
+                </h2>
+               {% for schedule in tomorrow_schedules %}
+                <div class="schedule-item">
+
+                    <span>
+                        {{ schedule.start_time }} - {{ schedule.end_time}}
+                    </span>
+
+                    <span class="badge">
+                        {{ schedule.reason }}
+                    </span>
+
+                </div>
+                {% empty %}
+
+                <div class="schedule-item">
+
+                    <span>
+
+                        No Schedule Tomorrow
+
+                    </span>
+
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- WEEKLY -->
+
+            <div class="schedule-card">
+
+                <h2>
+                    Weekly Schedule
+                </h2>
+
+                {% for row in weekly_rows %}
+
+                <div class="week-row">
+
+                    <span>
+                        {{ row.day }}
+                    </span>
+
+                    <span>
+                        {{ row.start_time }}
+                        -
+                        {{ row.end_time }}
+                    </span>
+
+                </div>
+
+
+                {% empty %}
+
+                <div class="week-row">
+
+                    <span>
+                        No Weekly Schedule
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
