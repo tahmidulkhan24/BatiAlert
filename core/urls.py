@@ -12,5 +12,16 @@ urlpatterns = [
         'schedule/',
         views.schedule,
         name='schedule'
-    )
+    ),
+    path(
+    'ajax/get-upazilas/',
+    views.get_upazilas,
+    name='get_upazilas'
+    ),
+
+    path(
+        'ajax/get-areas/',
+        views.get_areas,
+        name='get_areas'
+    ),
 ]
