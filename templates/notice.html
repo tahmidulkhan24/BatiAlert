@@ -1,1 +1,33 @@
-hiiii i am Ananya
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="notice-section" style="padding: 60px 20px; display: flex; justify-content: center;">
+    <div class="notice-container" style="width: 100%; max-width: 800px;">
+        
+        <div class="signup-header" style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 42px; font-weight: 700; margin-bottom: 12px; color: white;">Notice Board</h2>
+            <p style="color: var(--text-secondary); font-size: 18px;">Stay updated with latest power alerts</p>
+        </div>
+
+        <div class="notice-list">
+            {% for notice in notices %}
+            <div class="notice-card" style="background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                <h3 style="font-size: 22px; margin-bottom: 12px; color: white;">{{ notice.title }}</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6; font-size: 16px; margin-bottom: 18px;">
+                    {{ notice.message }} 
+                </p>
+                <div style="font-size: 14px; color: var(--accent); font-weight: 500;">
+                    Published: {{ notice.created_at|date:"d M, Y" }}
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 40px; background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                <p style="color: var(--text-secondary);">Currently, there are no notices to display.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
