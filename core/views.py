@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Notice
 from django.http import JsonResponse
 from .models import *
 from datetime import date, timedelta, datetime
@@ -11,6 +12,9 @@ def home(request):
         'base.html'
     )
 
+def notice_view(request):
+    notices = Notice.objects.all().order_by('-created_at') 
+    return render(request, 'notice.html', {'notices': notices})
 
 def schedule(request):
 
