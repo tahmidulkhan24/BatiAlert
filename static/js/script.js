@@ -348,3 +348,157 @@ document.addEventListener(
 
   }
 );
+/* ==========================
+   SAVE SETUP MODAL
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const openBtn =
+    document.getElementById(
+      "openSetupModal"
+    );
+
+    const modal =
+    document.getElementById(
+      "setupModal"
+    );
+
+    const closeBtn =
+    document.getElementById(
+      "closeSetupModal"
+    );
+
+    if(
+      !openBtn ||
+      !modal
+    ){
+      return;
+    }
+
+    openBtn.addEventListener(
+      "click",
+      function(event){
+
+        event.preventDefault();
+
+        modal.classList.add(
+          "show"
+        );
+       fetch(
+            "/users/get-saved-setup/"
+          )
+
+          .then(
+            response =>
+            response.json()
+          )
+
+          .then(
+            data => {
+
+              if(
+                !data.success
+              ){
+                return;
+              }
+
+              document.querySelector(
+                '[name="ips_capacity"]'
+              ).value =
+              data.ips_capacity;
+
+            }
+          );
+                }
+    );
+
+    closeBtn.addEventListener(
+      "click",
+      function(){
+
+        modal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+    modal.addEventListener(
+      "click",
+      function(event){
+
+        if(
+          event.target === modal
+        ){
+
+          modal.classList.remove(
+            "show"
+          );
+
+        }
+
+      }
+    );
+
+  }
+);
+/* ==========================
+   ADD APPLIANCE
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const addBtn =
+    document.getElementById(
+      "addAppliance"
+    );
+
+    const container =
+    document.getElementById(
+      "applianceContainer"
+    );
+
+    if(
+      !addBtn ||
+      !container
+    ){
+      return;
+    }
+
+    addBtn.addEventListener(
+      "click",
+      function(){
+
+        const firstItem =
+        document.querySelector(
+          ".appliance-item"
+        );
+
+        const clone =
+        firstItem.cloneNode(
+          true
+        );
+
+        clone
+        .querySelectorAll(
+          "input"
+        )
+        .forEach(
+          input =>
+          input.value = ""
+        );
+
+        container.appendChild(
+          clone
+        );
+
+      }
+    );
+
+  }
+);

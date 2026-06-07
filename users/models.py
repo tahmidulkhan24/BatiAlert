@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from core.models import Area
+from core.models import Area,Appliance
 
 
 class UserProfile(models.Model):
@@ -16,36 +16,53 @@ class UserProfile(models.Model):
         null=True
     )
 
-    battery_capacity = models.IntegerField(
-        default=100
-    )
-
-    battery_voltage = models.IntegerField(
-        default=12
-    )
-
-    battery_percentage = models.IntegerField(
-        default=100
-    )
-
+    
     def __str__(self):
         return self.user.username
     
+
+
 class SavedSetup(models.Model):
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE
     )
 
-    setup_name = models.CharField(
-        max_length=100
-    )
+    ips_capacity = models.IntegerField()
 
-    appliance_data = models.JSONField()
+
 
     def __str__(self):
+
         return (
-            f"{self.user.username} - "
-            f"{self.setup_name}"
+            f"{self.user.username}"
+        )
+    
+class SetupAppliance(models.Model):
+
+    setup = models.ForeignKey(
+        SavedSetup,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
+    appliance = models.ForeignKey(
+        Appliance,
+        on_delete=models.CASCADE
+    )
+
+    quantity = models.PositiveIntegerField()
+
+    custom_watt = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
+
+    priority = models.PositiveIntegerField()
+
+    def __str__(self):
+
+        return (
+            f"{self.appliance.name}"
         )

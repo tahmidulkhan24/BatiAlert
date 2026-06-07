@@ -877,3 +877,223 @@ body{
   }
 
 }
+/* ==========================
+   SAVE SETUP MODAL
+========================== */
+
+.setup-modal{
+
+  position:fixed;
+
+  inset:0;
+
+  display:none;
+
+  justify-content:center;
+
+  align-items:center;
+
+  background:
+  rgba(0,0,0,.7);
+
+  backdrop-filter:
+  blur(8px);
+
+  z-index:99999;
+}
+
+.setup-modal{
+
+  position:fixed;
+  inset:0;
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  background:rgba(0,0,0,0);
+
+  backdrop-filter:blur(0px);
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:
+  opacity .3s ease,
+  backdrop-filter .3s ease,
+  background .3s ease;
+
+  z-index:99999;
+}
+
+.setup-modal.show{
+
+  opacity:1;
+
+  visibility:visible;
+
+  background:rgba(0,0,0,.65);
+
+  backdrop-filter:blur(8px);
+}
+
+.setup-card-modal{
+
+  width:900px;
+
+  max-width:95%;
+
+  max-height:90vh;
+
+  overflow-y:auto;
+
+  background:var(--bg-secondary);
+
+  border:1px solid var(--border);
+
+  border-radius:28px;
+
+  padding:32px;
+
+  box-shadow:var(--shadow);
+
+  transform:
+  translateY(30px)
+  scale(.92);
+
+  opacity:0;
+
+  transition:
+  all .35s cubic-bezier(
+    0.175,
+    0.885,
+    0.32,
+    1.1
+  );
+}
+
+.setup-modal.show
+.setup-card-modal{
+
+  transform:
+  translateY(0)
+  scale(1);
+
+  opacity:1;
+}
+.setup-modal-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:25px;
+}
+
+.setup-modal-header h2{
+
+  font-size:34px;
+
+  font-weight:700;
+}
+
+.setup-close-btn{
+
+  width:42px;
+  height:42px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:#1e293b;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+}
+
+.setup-close-btn:hover{
+
+  transform:rotate(90deg);
+
+  background:#ef4444;
+}
+
+.setup-section-title{
+
+  margin-top:20px;
+
+  margin-bottom:18px;
+
+  font-size:22px;
+}
+
+.appliance-item{
+
+  background:#0b1328;
+
+  border:1px solid
+  rgba(255,255,255,.05);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  margin-bottom:15px;
+}
+
+.appliance-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(3,1fr);
+
+  gap:12px;
+
+  margin-top:12px;
+}
+
+.add-appliance-btn{
+
+  width:100%;
+
+  height:55px;
+
+  margin-bottom:20px;
+
+  border-radius:16px;
+
+  border:1px dashed
+  rgba(255,255,255,.15);
+
+  background:none;
+
+  color:#60a5fa;
+
+  cursor:pointer;
+
+  font-size:16px;
+}
+
+.add-appliance-btn:hover{
+
+  background:
+  rgba(37,99,235,.08);
+}
+
+@media(max-width:768px){
+
+  .appliance-grid{
+
+    grid-template-columns:
+    1fr;
+  }
+
+}

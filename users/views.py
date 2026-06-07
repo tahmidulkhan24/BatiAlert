@@ -7,6 +7,10 @@ from django.contrib.auth import (
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import *
+from django.contrib.auth.decorators import login_required
+from core.models import Appliance
+from django.http import JsonResponse
+
 
 def signup(request):
     if request.method=="POST":
@@ -116,3 +120,151 @@ def logout_view(request):
     return redirect(
         "login"
     )
+
+
+@login_required
+def save_setup(request):
+
+    if request.method != "POST":
+
+        return redirect(
+            "home"
+        )
+
+    ips_capacity = request.POST.get(
+        "ips_capacity"
+    )
+
+    if not ips_capacity:
+
+        messages.error(
+            request,
+            "Please enter IPS Capacity."
+        )
+
+        return redirect(
+            "home"
+        )
+
+    setup, created = (
+        SavedSetup.objects.get_or_create(
+            user=request.user,
+            defaults={
+                "ips_capacity":
+                ips_capacity
+            }
+        )
+    )
+
+    setup.ips_capacity = ips_capacity
+    setup.save()
+
+    setup.items.all().delete()
+
+    appliances = request.POST.getlist(
+        "appliance[]"
+    )
+
+    quantities = request.POST.getlist(
+        "quantity[]"
+    )
+
+    watts = request.POST.getlist(
+        "custom_watt[]"
+    )
+
+    priorities = request.POST.getlist(
+        "priority[]"
+    )
+
+    for appliance_id, qty, watt, priority in zip(
+        appliances,
+        quantities,
+        watts,
+        priorities
+    ):
+
+        if not appliance_id:
+            continue
+
+        SetupAppliance.objects.create(
+
+            setup=setup,
+
+            appliance_id=int(
+                appliance_id
+            ),
+
+            quantity=int(
+                qty or 1
+            ),
+
+            custom_watt=(
+                int(watt)
+                if watt
+                else None
+            ),
+
+            priority=int(
+                priority
+            )
+
+        )
+
+    messages.success(
+        request,
+        "Setup saved successfully!"
+    )
+
+    return redirect(
+        "home"
+    )
+
+@login_required
+def get_saved_setup(request):
+
+    try:
+
+        setup = SavedSetup.objects.get(
+            user=request.user
+        )
+
+        appliances = []
+
+        for item in setup.items.all():
+
+            appliances.append({
+
+                "appliance_id":
+                item.appliance.id,
+
+                "quantity":
+                item.quantity,
+
+                "custom_watt":
+                item.custom_watt,
+
+                "priority":
+                item.priority
+
+            })
+
+        return JsonResponse({
+
+            "success": True,
+
+            "ips_capacity":
+            setup.ips_capacity,
+
+            "appliances":
+            appliances
+
+        })
+
+    except SavedSetup.DoesNotExist:
+
+        return JsonResponse({
+
+            "success": False
+
+        })
