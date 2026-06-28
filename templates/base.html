@@ -61,9 +61,150 @@
 
 
   </main>
+  <!-- SAVE SETUP MODAL -->
 
+<div
+    id="setupModal"
+    class="setup-modal"
+>
+
+    <div class="setup-card-modal">
+
+        <div class="setup-modal-header">
+
+            <h2>
+                Save Backup Setup
+            </h2>
+
+            <button
+                id="closeSetupModal"
+                type="button"
+                class="setup-close-btn"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <form method="POST" action="{% url "save_setup" %}">
+            {% csrf_token %}
+            <div class="form-group">
+
+                <label class="form-label">
+                    IPS Capacity (VA)
+                </label>
+
+                <input
+                    type="number"
+                    name="ips_capacity"
+                    class="form-input"
+                    placeholder="Enter IPS Capacity"
+                >
+
+            </div>
+
+            <h3 class="setup-section-title">
+                Appliances
+            </h3>
+
+            <div
+                id="applianceContainer"
+            >
+
+                <div
+                    class="appliance-item"
+                >
+
+                    <select
+                        name="appliance[]"
+                        class="form-input"
+                    >
+
+                        <option value="">
+                            Select Appliance
+                        </option>
+
+                        {% for appliance in appliances %}
+
+                        <option value="{{ appliance.id }}">
+                            {{ appliance.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <div
+                        class="appliance-grid"
+                    >
+
+                        <input
+                            type="number"
+                             name="quantity[]"
+                            class="form-input"
+                            placeholder="Quantity"
+                        >
+
+                        <input
+                            type="number"
+                            class="form-input"
+                             name="custom_watt[]"
+                            placeholder="Custom Watt"
+                        >
+
+                        <select
+                         name="priority[]"
+                            class="form-input"
+                        >
+
+                           <option value="1">
+                              Highest
+                          </option>
+
+                          <option value="2">
+                              High
+                          </option>
+
+                          <option value="3">
+                              Medium
+                          </option>
+
+                          <option value="4">
+                              Low
+                          </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                id="addAppliance"
+                class="add-appliance-btn"
+            >
+                + Add Appliance
+            </button>
+
+            <button
+                type="submit"
+                class="schedule-btn w-full"
+            >
+                Save Setup
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
   <!-- JS -->
+
+  {% include 'footer.html' %}
   <script src="{% static 'js/script.js' %}"></script>
-{% include 'footer.html' %}
+
 </body>
 </html>

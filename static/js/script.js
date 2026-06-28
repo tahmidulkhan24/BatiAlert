@@ -170,3 +170,335 @@ if(authStatus){
   }
 
 }
+/* ==========================
+   SCHEDULE PAGE
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const button =
+    document.querySelector(
+      ".schedule-btn"
+    );
+
+    if(!button) return;
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        button.innerHTML =
+        "Loading...";
+
+        setTimeout(
+          function(){
+
+            button.innerHTML =
+            "View Schedule";
+
+            document
+            .getElementById(
+              "scheduleResults"
+            )
+            ?.scrollIntoView({
+              behavior:"smooth"
+            });
+
+          },
+          700
+        );
+
+      }
+    );
+
+  }
+);
+/* ==========================
+   AJAX SCHEDULE FILTER
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const districtSelect =
+    document.getElementById(
+      "district"
+    );
+
+    const upazilaSelect =
+    document.getElementById(
+      "upazila"
+    );
+
+    const areaSelect =
+    document.getElementById(
+      "area"
+    );
+
+    if(
+      !districtSelect ||
+      !upazilaSelect ||
+      !areaSelect
+    ){
+      return;
+    }
+
+    districtSelect.addEventListener(
+      "change",
+      function(){
+
+        const district =
+        this.value;
+
+        fetch(
+          `/ajax/get-upazilas/?district=${district}`
+        )
+
+        .then(
+          response =>
+          response.json()
+        )
+
+        .then(
+          data => {
+
+            upazilaSelect.innerHTML =
+            `
+            <option value="">
+            Select Upazila
+            </option>
+            `;
+
+            areaSelect.innerHTML =
+            `
+            <option value="">
+            Select Area
+            </option>
+            `;
+
+            data.upazilas.forEach(
+              function(upazila){
+
+                upazilaSelect.innerHTML +=
+                `
+                <option value="${upazila}">
+                ${upazila}
+                </option>
+                `;
+
+              }
+            );
+
+          }
+        );
+
+      }
+    );
+
+    upazilaSelect.addEventListener(
+      "change",
+      function(){
+
+        const district =
+        districtSelect.value;
+
+        const upazila =
+        this.value;
+
+        fetch(
+          `/ajax/get-areas/?district=${district}&upazila=${upazila}`
+        )
+
+        .then(
+          response =>
+          response.json()
+        )
+
+        .then(
+          data => {
+
+            areaSelect.innerHTML =
+            `
+            <option value="">
+            Select Area
+            </option>
+            `;
+
+            data.areas.forEach(
+              function(area){
+
+                areaSelect.innerHTML +=
+                `
+                <option value="${area.id}">
+                ${area.area_name}
+                </option>
+                `;
+
+              }
+            );
+
+          }
+        );
+
+      }
+    );
+
+  }
+);
+/* ==========================
+   SAVE SETUP MODAL
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const openBtn =
+    document.getElementById(
+      "openSetupModal"
+    );
+
+    const modal =
+    document.getElementById(
+      "setupModal"
+    );
+
+    const closeBtn =
+    document.getElementById(
+      "closeSetupModal"
+    );
+
+    if(
+      !openBtn ||
+      !modal
+    ){
+      return;
+    }
+
+    openBtn.addEventListener(
+      "click",
+      function(event){
+
+        event.preventDefault();
+
+        modal.classList.add(
+          "show"
+        );
+       fetch(
+            "/users/get-saved-setup/"
+          )
+
+          .then(
+            response =>
+            response.json()
+          )
+
+          .then(
+            data => {
+
+              if(
+                !data.success
+              ){
+                return;
+              }
+
+              document.querySelector(
+                '[name="ips_capacity"]'
+              ).value =
+              data.ips_capacity;
+
+            }
+          );
+                }
+    );
+
+    closeBtn.addEventListener(
+      "click",
+      function(){
+
+        modal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+    modal.addEventListener(
+      "click",
+      function(event){
+
+        if(
+          event.target === modal
+        ){
+
+          modal.classList.remove(
+            "show"
+          );
+
+        }
+
+      }
+    );
+
+  }
+);
+/* ==========================
+   ADD APPLIANCE
+========================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const addBtn =
+    document.getElementById(
+      "addAppliance"
+    );
+
+    const container =
+    document.getElementById(
+      "applianceContainer"
+    );
+
+    if(
+      !addBtn ||
+      !container
+    ){
+      return;
+    }
+
+    addBtn.addEventListener(
+      "click",
+      function(){
+
+        const firstItem =
+        document.querySelector(
+          ".appliance-item"
+        );
+
+        const clone =
+        firstItem.cloneNode(
+          true
+        );
+
+        clone
+        .querySelectorAll(
+          "input"
+        )
+        .forEach(
+          input =>
+          input.value = ""
+        );
+
+        container.appendChild(
+          clone
+        );
+
+      }
+    );
+
+  }
+);
