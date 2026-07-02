@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="profile-section-page">
+    <div class="profile-container-page">
+        <div class="profile-cover">
+            <div class="profile-large-avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+
+            <div>
+                <span class="home-kicker">My Profile</span>
+                <h1>{{ request.user.username }}</h1>
+                <p>Account information, saved area, and appliances connected to your backup setup.</p>
+            </div>
+        </div>
+
+        <div class="profile-page-grid">
+            <section class="profile-info-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">Account</span>
+                        <h2>User Information</h2>
+                    </div>
+                </div>
+
+                <div class="profile-info-list">
+                    <div>
+                        <span>Username</span>
+                        <strong>{{ request.user.username }}</strong>
+                    </div>
+                    <div>
+                        <span>Full Name</span>
+                        <strong>{{ request.user.first_name|default:"Not provided" }}</strong>
+                    </div>
+                    <div>
+                        <span>Email</span>
+                        <strong>{{ request.user.email|default:"Not provided" }}</strong>
+                    </div>
+                    <div>
+                        <span>Date Joined</span>
+                        <strong>{{ request.user.date_joined|date:"d M, Y" }}</strong>
+                    </div>
+                    <div>
+                        <span>Last Login</span>
+                        <strong>{{ request.user.last_login|date:"d M, Y h:i A"|default:"Not available" }}</strong>
+                    </div>
+                    <div>
+                        <span>Area</span>
+                        <strong>
+                            {% if user_profile and user_profile.area %}
+                                {{ user_profile.area }}
+                            {% else %}
+                                Not selected
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-info-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">Backup</span>
+                        <h2>Saved Setup</h2>
+                    </div>
+                    <button type="button" class="dashboard-link open-setup-modal">
+                        Edit Setup
+                    </button>
+                </div>
+
+                <div class="profile-setup-summary">
+                    <div>
+                        <span>IPS Capacity</span>
+                        <strong>
+                            {% if setup %}
+                                {{ setup.ips_capacity }} VA
+                            {% else %}
+                                Not saved
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div>
+                        <span>Total Appliances</span>
+                        <strong>{{ setup_items|length }}</strong>
+                    </div>
+                </div>
+
+                <div class="profile-appliance-table">
+                    {% for item in setup_items %}
+                    <div class="profile-appliance-item">
+                        <div>
+                            <strong>{{ item.appliance.name }}</strong>
+                            <span>Base watt: {{ item.appliance.watt }} W</span>
+                        </div>
+                        <div>
+                            <span>Quantity</span>
+                            <strong>{{ item.quantity }}</strong>
+                        </div>
+                        <div>
+                            <span>Custom Watt</span>
+                            <strong>{{ item.custom_watt|default:"Default" }}</strong>
+                        </div>
+                        <div>
+                            <span>Priority</span>
+                            <strong>{{ item.priority }}</strong>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="dashboard-empty">
+                        <h3>No appliances saved</h3>
+                        <p>Your saved appliances will appear here after you add a backup setup.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

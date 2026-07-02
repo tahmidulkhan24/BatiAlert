@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="dashboard-container">
+        <div class="dashboard-hero">
+            <div>
+                <span class="home-kicker">User Dashboard</span>
+                <h1>Welcome back, {{ request.user.username }}</h1>
+                <p>Monitor your saved backup plan, notices, and quick actions from one clean control center.</p>
+            </div>
+
+            <button type="button" class="dashboard-setup-btn open-setup-modal">
+                Update Setup
+            </button>
+        </div>
+
+        <div class="dashboard-stats">
+            <article class="dashboard-stat-card">
+                <span>IPS Capacity</span>
+                <strong>
+                    {% if setup %}
+                        {{ setup.ips_capacity }} VA
+                    {% else %}
+                        Not saved
+                    {% endif %}
+                </strong>
+                <small>Your current backup source</small>
+            </article>
+
+            <article class="dashboard-stat-card">
+                <span>Total Load</span>
+                <strong>{{ total_watt }} W</strong>
+                <small>Based on saved appliances</small>
+            </article>
+
+            <article class="dashboard-stat-card">
+                <span>Appliances</span>
+                <strong>{{ setup_items|length }}</strong>
+                <small>Items in your backup plan</small>
+            </article>
+
+            <article class="dashboard-stat-card">
+                <span>Notices</span>
+                <strong>{{ notice_count }}</strong>
+                <small>Published power updates</small>
+            </article>
+        </div>
+
+        <div class="dashboard-grid">
+            <section class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">Backup Plan</span>
+                        <h2>Saved Appliances</h2>
+                    </div>
+                    <a href="{% url 'profile' %}" class="dashboard-link">View Profile</a>
+                </div>
+
+                <div class="dashboard-appliance-list">
+                    {% for item in setup_items %}
+                    <div class="dashboard-appliance-row">
+                        <div>
+                            <strong>{{ item.appliance.name }}</strong>
+                            <span>Priority {{ item.priority }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ item.quantity }}x</strong>
+                            <span>{{ item.custom_watt|default:item.appliance.watt }} W each</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="dashboard-empty">
+                        <h3>No saved appliances yet</h3>
+                        <p>Use the setup button to save your IPS capacity and essential appliances.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <aside class="dashboard-panel dashboard-side-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">Latest</span>
+                        <h2>Power Notices</h2>
+                    </div>
+                </div>
+
+                <div class="dashboard-notice-list">
+                    {% for notice in notices %}
+                    <a href="{% url 'notices' %}" class="dashboard-notice">
+                        <strong>{{ notice.title }}</strong>
+                        <span>{{ notice.created_at|date:"d M, Y" }}</span>
+                    </a>
+                    {% empty %}
+                    <div class="dashboard-empty compact">
+                        <p>No notices have been published yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="dashboard-quick-actions">
+                    <a href="{% url 'schedule' %}">Check Schedule</a>
+                    <a href="{% url 'notices' %}">Open Notices</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

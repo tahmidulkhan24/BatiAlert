@@ -3,7 +3,7 @@
   <!-- Left: Logo -->
   <div class="navbar-left">
 
-    <a href="#"
+    <a href="{% url "home" %}"
        class="brand">
 
       
@@ -19,7 +19,7 @@
   <!-- Middle: Navigation -->
   <div class="navbar-center">
 
-    <a href="#"
+    <a href="{% url "dashboard" %}"
        class="nav-link protected-link">
 
         Dashboard
@@ -86,7 +86,7 @@
             id="profileDropdown"
             class="profile-dropdown">
 
-            <a href="#">
+            <a href="{% url "profile" %}">
                 My Profile
             </a>
 

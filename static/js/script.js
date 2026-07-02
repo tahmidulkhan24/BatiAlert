@@ -356,9 +356,9 @@ document.addEventListener(
   "DOMContentLoaded",
   function(){
 
-    const openBtn =
-    document.getElementById(
-      "openSetupModal"
+    const openButtons =
+    document.querySelectorAll(
+      "#openSetupModal, .open-setup-modal"
     );
 
     const modal =
@@ -372,47 +372,52 @@ document.addEventListener(
     );
 
     if(
-      !openBtn ||
+      !openButtons.length ||
       !modal
     ){
       return;
     }
 
-    openBtn.addEventListener(
-      "click",
-      function(event){
+    openButtons.forEach(
+      function(openBtn){
 
-        event.preventDefault();
+        openBtn.addEventListener(
+          "click",
+          function(event){
 
-        modal.classList.add(
-          "show"
-        );
-       fetch(
-            "/users/get-saved-setup/"
-          )
+            event.preventDefault();
 
-          .then(
-            response =>
-            response.json()
-          )
+            modal.classList.add(
+              "show"
+            );
+            fetch(
+              "/users/get-saved-setup/"
+            )
 
-          .then(
-            data => {
+            .then(
+              response =>
+              response.json()
+            )
 
-              if(
-                !data.success
-              ){
-                return;
-              }
+            .then(
+              data => {
 
-              document.querySelector(
-                '[name="ips_capacity"]'
-              ).value =
-              data.ips_capacity;
-
-            }
-          );
+                if(
+                  !data.success
+                ){
+                  return;
                 }
+
+                document.querySelector(
+                  '[name="ips_capacity"]'
+                ).value =
+                data.ips_capacity;
+
+              }
+            );
+          }
+        );
+      }
     );
 
     closeBtn.addEventListener(

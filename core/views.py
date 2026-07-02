@@ -11,9 +11,50 @@ def notice_view(request):
     return render(request, 'notice.html', {'notices': notices})
 
 def home(request):
-    return render(request, 'home.html')
-    notices = Notice.objects.all().order_by('-created_at') 
-    return render(request, 'notice.html', {'notices': notices})
+    priority_appliance = None
+    total_watt = 0
+
+    if request.user.is_authenticated:
+        from users.models import SavedSetup
+
+        setup = (
+            SavedSetup.objects
+            .filter(user=request.user)
+            .prefetch_related("items__appliance")
+            .first()
+        )
+
+        if setup:
+            setup_items = setup.items.all()
+
+            priority_appliance = (
+                setup_items
+                .order_by("priority", "id")
+                .first()
+            )
+
+            for item in setup_items:
+                watt = (
+                    item.custom_watt
+                    or item.appliance.watt
+                )
+
+                total_watt += (
+                    watt *
+                    item.quantity
+                )
+
+    return render(
+        request,
+        'home.html',
+        {
+            "priority_appliance":
+            priority_appliance,
+
+            "total_watt":
+            total_watt,
+        }
+    )
 
 def schedule(request):
 

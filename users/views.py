@@ -8,7 +8,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from .models import *
 from django.contrib.auth.decorators import login_required
-from core.models import Appliance
+from core.models import Appliance, Notice
 from django.http import JsonResponse
 
 
@@ -91,7 +91,7 @@ def login_view(request):
             )
 
             return redirect(
-                "home"
+                "dashboard"
             )
         else:
 
@@ -107,6 +107,92 @@ def login_view(request):
     return render(
         request,
         "login.html")
+
+
+@login_required(login_url="login")
+def dashboard(request):
+
+    setup = (
+        SavedSetup.objects
+        .filter(user=request.user)
+        .prefetch_related("items__appliance")
+        .first()
+    )
+
+    setup_items = []
+    total_watt = 0
+
+    if setup:
+
+        setup_items = setup.items.all()
+
+        for item in setup_items:
+
+            watt = (
+                item.custom_watt
+                or item.appliance.watt
+            )
+
+            total_watt += (
+                watt *
+                item.quantity
+            )
+
+    notices = (
+        Notice.objects
+        .all()
+        .order_by("-created_at")[:3]
+    )
+
+    context = {
+        "setup": setup,
+        "setup_items": setup_items,
+        "total_watt": total_watt,
+        "notice_count": Notice.objects.count(),
+        "notices": notices,
+    }
+
+    return render(
+        request,
+        "dashboard.html",
+        context
+    )
+
+
+@login_required(login_url="login")
+def profile(request):
+
+    user_profile = (
+        UserProfile.objects
+        .filter(user=request.user)
+        .select_related("area")
+        .first()
+    )
+
+    setup = (
+        SavedSetup.objects
+        .filter(user=request.user)
+        .prefetch_related("items__appliance")
+        .first()
+    )
+
+    setup_items = (
+        setup.items.all()
+        if setup
+        else []
+    )
+
+    context = {
+        "user_profile": user_profile,
+        "setup": setup,
+        "setup_items": setup_items,
+    }
+
+    return render(
+        request,
+        "profile.html",
+        context
+    )
 
 def logout_view(request):
 

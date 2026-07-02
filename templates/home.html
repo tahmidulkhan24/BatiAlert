@@ -3,66 +3,115 @@
 
 {% block content %}
 <section class="home-hero">
-    <div class="hero-container">
-        <div class="hero-content">
-            <h1 class="hero-title">Stay Powered, <span class="highlight">Stay Informed.</span></h1>
-            <p class="hero-subtitle">
-                
+    <div class="home-hero-grid">
+        <div class="home-hero-content">
+            <span class="home-kicker">Smart load shedding companion</span>
+
+            <h1 class="home-title">
+                Stay powered when the city slows down.
+            </h1>
+
+            <p class="home-subtitle">
+                Track outages, plan backup power, and keep your essential appliances ready with a calmer way to handle load shedding.
             </p>
-            
-            <div class="hero-actions">
+
+            <div class="home-actions">
                 {% if request.user.is_authenticated %}
-                    <a href="#" class="nav-signup">Go to Dashboard</a>
+                    <a href="{% url 'dashboard' %}" class="home-primary-btn">Go to Dashboard</a>
+                    <a href="{% url 'schedule' %}" class="home-ghost-btn">View Schedule</a>
                 {% else %}
-                    <a href="/users/login/" class="nav-login">Sign In</a>
-                    <a href="/users/signup/" class="nav-signup">Get Started</a>
+                    <a href="{% url 'signup' %}" class="home-primary-btn">Get Started</a>
+                    <a href="{% url 'login' %}" class="home-ghost-btn">Sign In</a>
                 {% endif %}
+            </div>
+
+            <div class="home-trust-row">
+                <div>
+                    <strong>Live</strong>
+                    <span>area schedules</span>
+                </div>
+                <div>
+                    <strong>IPS</strong>
+                    <span>setup planning</span>
+                </div>
+                <div>
+                    <strong>Fast</strong>
+                    <span>power notices</span>
+                </div>
             </div>
         </div>
 
-        <div class="features-preview">
-            <div class="feature-card">
-                <h3>Power Alerts</h3>
-                <p>Get advanced warnings for local load shedding.</p>
+        <div class="home-power-panel {% if not request.user.is_authenticated %}no-floating-card{% endif %}">
+            <div class="power-card main-power-card">
+                <div class="power-card-top">
+                    <span class="status-dot"></span>
+                    <span>Backup readiness</span>
+                </div>
+                <div class="power-meter">
+                    <span></span>
+                </div>
+                <div class="power-stat-grid">
+                    <div>
+                        <small>Critical load</small>
+                        <strong>
+                            {% if total_watt %}
+                                {{ total_watt }}W
+                            {% else %}
+                                0W
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div>
+                        <small>Next alert</small>
+                        <strong>2h 15m</strong>
+                    </div>
+                </div>
             </div>
-            <div class="feature-card">
-                <h3>Backup Calculator</h3>
-                <p>Estimate backup runtime based on your current load.</p>
+
+            {% if priority_appliance or request.user.is_authenticated %}
+            <div class="power-card floating-power-card">
+                {% if priority_appliance %}
+                    <small>Priority appliance</small>
+                    <strong>{{ priority_appliance.appliance.name }}</strong>
+                    <span>
+                        {{ priority_appliance.quantity }}x at
+                        {{ priority_appliance.custom_watt|default:priority_appliance.appliance.watt }}W
+                    </span>
+                {% elif request.user.is_authenticated %}
+                    <small>Priority appliance</small>
+                    <strong>No setup saved</strong>
+                    <span>Add appliances from dashboard</span>
+                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<style>
-    .home-hero {
-        padding: 80px 20px;
-        display: flex;
-        justify-content: center;
-        background: radial-gradient(circle at top right, #1e3a8a, transparent),
-                    radial-gradient(circle at bottom left, #0f172a, transparent);
-    }
-    .hero-container {
-        max-width: 1000px;
-        width: 100%;
-        text-align: center;
-    }
-    .hero-title { font-size: 64px; margin-bottom: 20px; }
-    .highlight { color: var(--accent); }
-    .hero-subtitle { color: var(--text-secondary); font-size: 20px; max-width: 700px; margin: 0 auto 40px; }
-    .hero-actions { display: flex; gap: 20px; justify-content: center; align-items: center; }
-    
-    .features-preview {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-        margin-top: 60px;
-    }
-    .feature-card {
-        background: var(--bg-secondary);
-        padding: 30px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-    }
-    .feature-card h3 { margin-bottom: 10px; color: var(--accent); }
-</style>
+<section class="home-feature-section">
+    <div class="home-section-heading">
+        <span class="home-kicker">Built for everyday planning</span>
+        <h2>Everything important is one click away.</h2>
+    </div>
+
+    <div class="home-feature-grid">
+        <article class="home-feature-card">
+            <span class="feature-index">01</span>
+            <h3>Power Alerts</h3>
+            <p>Stay updated with local outage notices and maintenance announcements before they interrupt your day.</p>
+        </article>
+
+        <article class="home-feature-card">
+            <span class="feature-index">02</span>
+            <h3>Backup Setup</h3>
+            <p>Save IPS capacity and appliance priorities so your plan is ready when power is limited.</p>
+        </article>
+
+        <article class="home-feature-card">
+            <span class="feature-index">03</span>
+            <h3>Schedule View</h3>
+            <p>Filter by district, upazila, and area to see today, tomorrow, and weekly outage windows.</p>
+        </article>
+    </div>
+</section>
 {% endblock %}
