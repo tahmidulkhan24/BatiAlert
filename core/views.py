@@ -296,3 +296,5 @@ def get_areas(request):
             'areas': areas
         }
     )
+def calculator(request):
+    return render(request,'calculator.html')

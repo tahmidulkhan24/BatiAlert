@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="ips-advisor">
+
+    <div class="advisor-card">
+
+        <h2>⚡ Smart IPS Advisor</h2>
+
+        <p>
+            Check whether your IPS can support today's load shedding.
+        </p>
+
+        <hr>
+
+        <!-- Setup -->
+
+        <label>
+            <strong>Use Saved Setup</strong>
+        </label>
+
+        <div class="radio-group">
+
+            <label>
+                <input type="radio" name="setup" checked>
+                Yes
+            </label>
+
+            <label>
+                <input type="radio" name="setup">
+                Use Another IPS
+            </label>
+
+        </div>
+
+        <hr>
+
+        <!-- Saved Setup -->
+
+        <div class="saved-box">
+
+            <h3>Saved Setup</h3>
+
+            <p><strong>IPS :</strong> 850 VA</p>
+
+            <table>
+
+                <tr>
+                    <th>Appliance</th>
+                    <th>Qty</th>
+                    <th>Priority</th>
+                </tr>
+
+                <tr>
+                    <td>Fan</td>
+                    <td>2</td>
+                    <td>Highest</td>
+                </tr>
+
+                <tr>
+                    <td>Light</td>
+                    <td>4</td>
+                    <td>Highest</td>
+                </tr>
+
+                <tr>
+                    <td>TV</td>
+                    <td>1</td>
+                    <td>Medium</td>
+                </tr>
+
+                <tr>
+                    <td>Router</td>
+                    <td>1</td>
+                    <td>Highest</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <hr>
+
+        <label>Battery Voltage</label>
+
+        <input
+            type="number"
+            placeholder="12"
+        >
+
+        <label>Battery Capacity (Ah)</label>
+
+        <input
+            type="number"
+            placeholder="150"
+        >
+
+        <label>Area</label>
+
+        <select>
+
+            <option>Select Area</option>
+
+            <option>Adabor</option>
+
+            <option>Dhanmondi</option>
+
+            <option>Mirpur</option>
+
+        </select>
+
+        <br><br>
+
+        <button>
+            Analyze My IPS
+        </button>
+
+    </div>
+
+    <br><br>
+
+    <!-- Result -->
+
+    <div class="advisor-result">
+
+        <h2>Today's Analysis</h2>
+
+        <hr>
+
+        <p>
+
+            📍 <strong>Area :</strong>
+
+            Adabor
+
+        </p>
+
+        <p>
+
+            ⚡ <strong>Today's Load Shedding</strong>
+
+        </p>
+
+        <p>
+
+            6:00 PM → 10:00 PM
+
+        </p>
+
+        <p>
+
+            Duration :
+
+            <strong>4 Hours</strong>
+
+        </p>
+
+        <hr>
+
+        <p>
+
+            🔋 Estimated IPS Backup
+
+        </p>
+
+        <h3>
+
+            3 Hours 35 Minutes
+
+        </h3>
+
+        <p style="color:red;">
+
+            Backup is NOT enough.
+
+        </p>
+
+        <hr>
+
+        <h3>
+
+            Recommendation
+
+        </h3>
+
+        <ul>
+
+            <li>Turn OFF TV</li>
+
+            <li>Turn OFF One Fan</li>
+
+        </ul>
+
+        <hr>
+
+        <h3>
+
+            Backup After Recommendation
+
+        </h3>
+
+        <h2>
+
+            4 Hours 20 Minutes
+
+        </h2>
+
+        <p style="color:green;">
+
+            ✔ Your IPS can now support today's load shedding.
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
