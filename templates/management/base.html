@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="management-section">
+    <div class="management-shell">
+        <aside class="management-sidebar">
+            <div class="management-brand-block">
+                <strong>BatiAlert</strong>
+                <span>Staff workspace</span>
+            </div>
+
+            <nav class="management-nav">
+                <a class="{% if request.resolver_match.url_name == 'management_dashboard' %}active{% endif %}" href="{% url 'management_dashboard' %}">
+                    <span>Overview</span>
+                    <small>Stats</small>
+                </a>
+                <a class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'management_schedules' %}">
+                    <span>Schedules</span>
+                    <small>Plan outages</small>
+                </a>
+                <a class="{% if 'notice' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'management_notices' %}">
+                    <span>Notices</span>
+                    <small>Publish alerts</small>
+                </a>
+                <a class="{% if 'feedback' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'management_feedback' %}">
+                    <span>Feedback</span>
+                    <small>Resolve reports</small>
+                </a>
+            </nav>
+
+            <a class="management-admin-link" href="{% url 'admin:index' %}">Open Django Admin</a>
+        </aside>
+
+        <div class="management-content">
+            <div class="management-topbar">
+                <div>
+                    <span>Signed in as</span>
+                    <strong>{{ request.user.username }}</strong>
+                </div>
+                <a href="{% url 'home' %}">View Site</a>
+            </div>
+
+            {% block management_content %}{% endblock %}
+        </div>
+    </div>
+</section>
+{% endblock %}

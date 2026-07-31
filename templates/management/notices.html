@@ -1,0 +1,124 @@
+{% extends 'management/base.html' %}
+
+{% block management_content %}
+<div class="page-heading-row">
+    <div>
+        <span class="home-kicker">Notices</span>
+        <h1>Manage public notices</h1>
+        <p>Publish area notices, pin urgent updates, and keep customer alerts tidy.</p>
+    </div>
+</div>
+
+<section class="dashboard-panel management-card">
+    <div class="dashboard-panel-header">
+        <div>
+            <span class="home-kicker">Publish</span>
+            <h2>New notice</h2>
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'management_notice_create' %}" class="management-form">
+        {% csrf_token %}
+        <label>
+            <span>Title</span>
+            <input class="form-input" type="text" name="title" placeholder="Notice title" required>
+        </label>
+        <label>
+            <span>Type</span>
+            <select class="form-input" name="notice_type">
+                {% for value, label in notice_types %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            <span>Area</span>
+            <select class="form-input" name="area">
+                <option value="">All areas</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.district }} - {{ area.upazila }} - {{ area.area_name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="toggle-row"><input type="checkbox" name="is_pinned"> <span>Pin notice</span></label>
+        <label class="wide-field">
+            <span>Message</span>
+            <textarea class="form-input textarea-input" name="message" placeholder="Write the full notice message" required></textarea>
+        </label>
+        <button class="schedule-btn" type="submit">Publish Notice</button>
+    </form>
+</section>
+
+<form method="GET" class="management-filter-card solo-filter">
+    <select class="form-input" name="type">
+        <option value="">All notice types</option>
+        {% for value, label in notice_types %}
+        <option value="{{ value }}" {% if value == selected_type %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="schedule-btn" type="submit">Filter</button>
+</form>
+
+<section class="dashboard-panel management-card">
+    <div class="dashboard-panel-header">
+        <div>
+            <span class="home-kicker">Published</span>
+            <h2>Notice list</h2>
+        </div>
+        <small>Open a notice to edit details.</small>
+    </div>
+
+    {% for notice in notices %}
+    <details class="management-record notice-record">
+        <summary>
+            <div>
+                <strong>{{ notice.title }}</strong>
+                <span>{{ notice.created_at|date:"d M, Y h:i A" }}</span>
+            </div>
+            <span class="management-pill">{{ notice.notice_type }}</span>
+            {% if notice.area %}
+            <span>{{ notice.area.area_name }}</span>
+            {% else %}
+            <span>All areas</span>
+            {% endif %}
+            {% if notice.is_pinned %}
+            <span class="management-pill pinned">Pinned</span>
+            {% endif %}
+        </summary>
+
+        <form method="POST" action="{% url 'management_notice_update' notice.id %}" class="management-form compact-form">
+            {% csrf_token %}
+            <label>
+                <span>Title</span>
+                <input class="form-input" type="text" name="title" value="{{ notice.title }}">
+            </label>
+            <label>
+                <span>Type</span>
+                <select class="form-input" name="notice_type">
+                    {% for value, label in notice_types %}
+                    <option value="{{ value }}" {% if value == notice.notice_type %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                <span>Area</span>
+                <select class="form-input" name="area">
+                    <option value="">All areas</option>
+                    {% for area in areas %}
+                    <option value="{{ area.id }}" {% if notice.area and area.id == notice.area.id %}selected{% endif %}>{{ area.area_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label class="toggle-row"><input type="checkbox" name="is_pinned" {% if notice.is_pinned %}checked{% endif %}> <span>Pin notice</span></label>
+            <label class="wide-field">
+                <span>Message</span>
+                <textarea class="form-input textarea-input" name="message">{{ notice.message }}</textarea>
+            </label>
+            <button class="schedule-btn" type="submit">Save Notice</button>
+        </form>
+    </details>
+    {% empty %}
+    <div class="dashboard-empty compact"><p>No notices yet.</p></div>
+    {% endfor %}
+</section>
+{% endblock %}

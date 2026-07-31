@@ -29,4 +29,14 @@ urlpatterns = [
     views.get_saved_setup,
       name="get_saved_setup"
    ),
+    path(
+        "save-area/",
+        views.save_area,
+        name="save_area"
+    ),
+    path(
+        "saved-area/<int:saved_area_id>/delete/",
+        views.delete_area,
+        name="delete_area"
+    ),
 ]

@@ -8,7 +8,9 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from .models import *
 from django.contrib.auth.decorators import login_required
-from core.models import Appliance, Notice
+from django.utils import timezone
+from core.models import Appliance, Area, Notice
+from core.views import build_area_status, schedules_for_area_on
 from django.http import JsonResponse
 
 
@@ -144,12 +146,50 @@ def dashboard(request):
         .order_by("-created_at")[:3]
     )
 
+    saved_areas = (
+        SavedArea.objects
+        .filter(user=request.user)
+        .select_related("area")
+        .order_by("-is_primary", "label")
+    )
+
+    area_statuses = [
+        {
+            "saved_area": saved_area,
+            **build_area_status(saved_area.area)
+        }
+        for saved_area in saved_areas
+    ]
+
+    upcoming_by_area = []
+
+    for saved_area in saved_areas:
+        upcoming_by_area.append({
+            "saved_area": saved_area,
+            "schedules": schedules_for_area_on(
+                saved_area.area_id,
+                timezone.localdate()
+            )[:3],
+        })
+
     context = {
         "setup": setup,
         "setup_items": setup_items,
         "total_watt": total_watt,
+        "capacity_percent": min(
+            100,
+            round((total_watt / setup.ips_capacity) * 100)
+        ) if setup and setup.ips_capacity else 0,
         "notice_count": Notice.objects.count(),
         "notices": notices,
+        "saved_areas": saved_areas,
+        "area_statuses": area_statuses,
+        "upcoming_by_area": upcoming_by_area,
+        "areas": Area.objects.all().order_by(
+            "district",
+            "upazila",
+            "area_name"
+        ),
     }
 
     return render(
@@ -186,6 +226,14 @@ def profile(request):
         "user_profile": user_profile,
         "setup": setup,
         "setup_items": setup_items,
+        "saved_areas": SavedArea.objects.filter(
+            user=request.user
+        ).select_related("area"),
+        "areas": Area.objects.all().order_by(
+            "district",
+            "upazila",
+            "area_name"
+        ),
     }
 
     return render(
@@ -354,3 +402,63 @@ def get_saved_setup(request):
             "success": False
 
         })
+
+
+@login_required(login_url="login")
+def save_area(request):
+    if request.method == "POST":
+        area_id = request.POST.get("area")
+        label = request.POST.get("label", "Home").strip() or "Home"
+
+        if not area_id:
+            messages.error(request, "Please choose an area.")
+            return redirect("dashboard")
+
+        saved_area, created = SavedArea.objects.get_or_create(
+            user=request.user,
+            area_id=area_id,
+            label=label,
+            defaults={
+                "email_alerts":
+                request.POST.get("email_alerts") == "on",
+                "alert_minutes_before":
+                int(request.POST.get("alert_minutes_before") or 30),
+                "is_primary":
+                not SavedArea.objects.filter(
+                    user=request.user
+                ).exists(),
+            }
+        )
+
+        if not created:
+            saved_area.email_alerts = (
+                request.POST.get("email_alerts") == "on"
+            )
+            saved_area.alert_minutes_before = int(
+                request.POST.get("alert_minutes_before") or 30
+            )
+            saved_area.save()
+
+        profile, _ = UserProfile.objects.get_or_create(
+            user=request.user
+        )
+
+        if saved_area.is_primary or not profile.area:
+            profile.area = saved_area.area
+            profile.save()
+
+        messages.success(request, "Area preferences saved.")
+
+    return redirect(request.POST.get("next") or "dashboard")
+
+
+@login_required(login_url="login")
+def delete_area(request, saved_area_id):
+    if request.method == "POST":
+        SavedArea.objects.filter(
+            id=saved_area_id,
+            user=request.user
+        ).delete()
+        messages.success(request, "Saved area removed.")
+
+    return redirect(request.POST.get("next") or "dashboard")

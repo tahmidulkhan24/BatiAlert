@@ -1,0 +1,49 @@
+{% extends 'management/base.html' %}
+
+{% block management_content %}
+<div class="page-heading-row">
+    <div>
+        <span class="home-kicker">Feedback</span>
+        <h1>Feedback inbox</h1>
+        <p>Review schedule reports and customer suggestions, then move them through resolution.</p>
+    </div>
+</div>
+
+<form method="GET" class="notice-filter-bar">
+    <select class="form-input" name="status">
+        <option value="">All statuses</option>
+        {% for value, label in statuses %}
+        <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="schedule-btn" type="submit">Filter</button>
+</form>
+
+<section class="dashboard-panel">
+    {% for report in reports %}
+    <details class="management-row">
+        <summary>
+            <strong>{{ report.subject }}</strong>
+            <span>{{ report.feedback_type }} · {{ report.status }} · {{ report.created_at|date:"d M, Y" }}</span>
+        </summary>
+        <p>{{ report.message }}</p>
+        <small>
+            From {{ report.user.username|default:"Guest" }}
+            {% if report.area %}about {{ report.area.area_name }}{% endif %}
+        </small>
+        <form method="POST" action="{% url 'management_feedback_update' report.id %}" class="management-form compact-form">
+            {% csrf_token %}
+            <select class="form-input" name="status">
+                {% for value, label in statuses %}
+                <option value="{{ value }}" {% if value == report.status %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <textarea class="form-input textarea-input" name="staff_note" placeholder="Staff note">{{ report.staff_note }}</textarea>
+            <button class="schedule-btn" type="submit">Update Report</button>
+        </form>
+    </details>
+    {% empty %}
+    <div class="dashboard-empty compact"><p>No feedback found.</p></div>
+    {% endfor %}
+</section>
+{% endblock %}

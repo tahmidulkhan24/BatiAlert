@@ -1,0 +1,99 @@
+{% extends 'management/base.html' %}
+
+{% block management_content %}
+<div class="page-heading-row">
+    <div>
+        <span class="home-kicker">Staff Panel</span>
+        <h1>Operations dashboard</h1>
+        <p>Quick health check for users, schedules, notices, and unresolved reports.</p>
+    </div>
+    <div class="management-heading-actions">
+        <a class="dashboard-link" href="{% url 'management_schedules' %}">New Schedule</a>
+        <a class="dashboard-link" href="{% url 'management_notices' %}">New Notice</a>
+    </div>
+</div>
+
+<div class="management-stat-grid">
+    <article class="management-stat-card">
+        <span>Users</span>
+        <strong>{{ user_count }}</strong>
+        <small>Registered accounts</small>
+    </article>
+    <article class="management-stat-card">
+        <span>Schedules</span>
+        <strong>{{ schedule_count }}</strong>
+        <small>Total outage windows</small>
+    </article>
+    <article class="management-stat-card">
+        <span>Notices</span>
+        <strong>{{ notice_count }}</strong>
+        <small>Published updates</small>
+    </article>
+    <article class="management-stat-card urgent">
+        <span>Pending Feedback</span>
+        <strong>{{ pending_feedback_count }}</strong>
+        <small>Needs staff review</small>
+    </article>
+</div>
+
+<div class="dashboard-grid">
+    <section class="dashboard-panel management-card">
+        <div class="dashboard-panel-header">
+            <div>
+                <span class="home-kicker">Next</span>
+                <h2>Upcoming Schedules</h2>
+            </div>
+            <a class="dashboard-link" href="{% url 'management_schedules' %}">Manage</a>
+        </div>
+
+        {% for schedule in upcoming_schedules %}
+        <div class="management-list-row">
+            <div>
+                <strong>{{ schedule.area.area_name }}</strong>
+                <span>{{ schedule.area.district }} - {{ schedule.area.upazila }}</span>
+            </div>
+            <span class="management-pill">{{ schedule.start_date }} | {{ schedule.start_time }} - {{ schedule.end_time }}</span>
+        </div>
+        {% empty %}
+        <div class="dashboard-empty compact"><p>No schedules yet.</p></div>
+        {% endfor %}
+    </section>
+
+    <section class="dashboard-panel management-card">
+        <div class="dashboard-panel-header">
+            <div>
+                <span class="home-kicker">Inbox</span>
+                <h2>Recent Feedback</h2>
+            </div>
+            <a class="dashboard-link" href="{% url 'management_feedback' %}">Open</a>
+        </div>
+
+        {% for report in recent_feedback %}
+        <div class="management-list-row">
+            <div>
+                <strong>{{ report.subject }}</strong>
+                <span>{{ report.feedback_type }} | {{ report.created_at|date:"d M, Y" }}</span>
+            </div>
+            <span class="management-pill status-{{ report.status|slugify }}">{{ report.status }}</span>
+        </div>
+        {% empty %}
+        <div class="dashboard-empty compact"><p>No feedback yet.</p></div>
+        {% endfor %}
+    </section>
+</div>
+
+<section class="management-quick-panel">
+    <a href="{% url 'management_schedules' %}">
+        <strong>Create schedules</strong>
+        <span>Add daily or recurring outage windows with overlap checks.</span>
+    </a>
+    <a href="{% url 'management_notices' %}">
+        <strong>Publish notices</strong>
+        <span>Pin emergency notices and target specific areas.</span>
+    </a>
+    <a href="{% url 'management_schedule_export' %}">
+        <strong>Export CSV</strong>
+        <span>Download schedule data for sharing or backup.</span>
+    </a>
+</section>
+{% endblock %}

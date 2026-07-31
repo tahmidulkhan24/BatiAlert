@@ -13,7 +13,7 @@
             </h1>
 
             <p class="schedule-subtitle">
-                Select your area and view upcoming outages.
+                Select your area and view live status, today, tomorrow, and the next seven days.
             </p>
 
         </div>
@@ -141,16 +141,34 @@
                     <span class="live-dot"></span>
 
                     <span>
-                        Next Outage
+                        {% if power_status and power_status.is_power_off %}
+                            Live Status
+                        {% else %}
+                            Next Outage
+                        {% endif %}
                     </span>
 
                 </div>
 
                 <div class="countdown">
 
-                    Starts In
+                    {% if power_status and power_status.is_power_off %}
+                        Current state
+                    {% else %}
+                        Starts In
+                    {% endif %}
 
                 </div>
+
+                {% if power_status %}
+                <div class="power-state-banner {% if power_status.is_power_off %}off{% else %}on{% endif %}">
+                    {% if power_status.is_power_off %}
+                        Power OFF until {{ power_status.current_outage.end_time }}
+                    {% else %}
+                        Power ON now
+                    {% endif %}
+                </div>
+                {% endif %}
 
                 {% if next_outage %}
 
@@ -277,21 +295,21 @@
             <div class="schedule-card">
 
                 <h2>
-                    Weekly Schedule
+                    Weekly Calendar
                 </h2>
 
-                {% for row in weekly_rows %}
+                {% for day in weekly_calendar %}
 
-                <div class="week-row">
+                <div class="week-row calendar-row">
 
-                    <span>
-                        {{ row.day }}
-                    </span>
+                    <span>{{ day.day }} <small>{{ day.date|date:"d M" }}</small></span>
 
-                    <span>
-                        {{ row.start_time }}
-                        -
-                        {{ row.end_time }}
+                    <span class="calendar-slots">
+                        {% for item in day.schedules %}
+                            <b>{{ item.start_time }} - {{ item.end_time }}</b>
+                        {% empty %}
+                            No outage
+                        {% endfor %}
                     </span>
 
                 </div>
@@ -301,9 +319,7 @@
 
                 <div class="week-row">
 
-                    <span>
-                        No Weekly Schedule
-                    </span>
+                    <span>Select an area to see the weekly calendar</span>
 
                 </div>
 

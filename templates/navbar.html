@@ -47,6 +47,15 @@
 
     </a>
 
+    {% if request.user.is_staff %}
+    <a href="{% url "management_dashboard" %}"
+       class="nav-link">
+
+        Management
+
+    </a>
+    {% endif %}
+
 </div>
 
 <span

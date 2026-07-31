@@ -1,33 +1,58 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-<div class="notice-section" style="padding: 60px 20px; display: flex; justify-content: center;">
-    <div class="notice-container" style="width: 100%; max-width: 800px;">
-        
-        <div class="signup-header" style="text-align: center; margin-bottom: 40px;">
-            <h2 style="font-size: 42px; font-weight: 700; margin-bottom: 12px; color: white;">Notice Board</h2>
-            <p style="color: var(--text-secondary); font-size: 18px;">Stay updated with latest power alerts</p>
+<section class="notice-section-page">
+    <div class="notice-container-page">
+        <div class="page-heading-row">
+            <div>
+                <span class="home-kicker">Notice Board</span>
+                <h1>Power updates and alerts</h1>
+                <p>Search maintenance updates, emergency alerts, and area-specific notices.</p>
+            </div>
         </div>
 
-        <div class="notice-list">
+        <form method="GET" class="notice-filter-bar">
+            <input class="form-input" type="search" name="q" value="{{ query }}" placeholder="Search notices">
+            <select class="form-input" name="type">
+                <option value="">All types</option>
+                {% for value, label in notice_types %}
+                <option value="{{ value }}" {% if value == selected_type %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <select class="form-input" name="area">
+                <option value="">All areas</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}" {% if area.id|stringformat:"s" == selected_area %}selected{% endif %}>
+                    {{ area.district }} - {{ area.upazila }} - {{ area.area_name }}
+                </option>
+                {% endfor %}
+            </select>
+            <button class="schedule-btn" type="submit">Filter</button>
+        </form>
+
+        <div class="notice-list-page">
             {% for notice in notices %}
-            <div class="notice-card" style="background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: var(--radius-lg); margin-bottom: 20px;">
-                <h3 style="font-size: 22px; margin-bottom: 12px; color: white;">{{ notice.title }}</h3>
-                <p style="color: var(--text-secondary); line-height: 1.6; font-size: 16px; margin-bottom: 18px;">
-                    {{ notice.message }} 
-                </p>
-                <div style="font-size: 14px; color: var(--accent); font-weight: 500;">
-                    Published: {{ notice.created_at|date:"d M, Y" }}
+            <article class="notice-card-page {% if notice.id in unread_ids %}unread{% endif %}">
+                <div class="notice-card-top">
+                    <div>
+                        <h2>{{ notice.title }}</h2>
+                        <span>{{ notice.notice_type }}{% if notice.area %} · {{ notice.area.area_name }}{% endif %}</span>
+                    </div>
+                    <div class="notice-badges">
+                        {% if notice.is_pinned %}<span class="notice-badge pinned">Pinned</span>{% endif %}
+                        {% if notice.id in unread_ids %}<span class="notice-badge unread">Unread</span>{% endif %}
+                    </div>
                 </div>
-            </div>
+                <p>{{ notice.message }}</p>
+                <small>Published {{ notice.created_at|date:"d M, Y h:i A" }}</small>
+            </article>
             {% empty %}
-            <div style="text-align: center; padding: 40px; background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border);">
-                <p style="color: var(--text-secondary);">Currently, there are no notices to display.</p>
+            <div class="dashboard-empty">
+                <h3>No notices found</h3>
+                <p>Try changing your search or filters.</p>
             </div>
             {% endfor %}
         </div>
-
     </div>
-</div>
+</section>
 {% endblock %}

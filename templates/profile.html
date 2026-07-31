@@ -56,6 +56,29 @@
                         </strong>
                     </div>
                 </div>
+
+                <div class="profile-saved-areas">
+                    <h3>Tracked Areas</h3>
+                    {% for saved_area in saved_areas %}
+                    <div class="profile-area-row">
+                        <div>
+                            <strong>{{ saved_area.label }}</strong>
+                            <span>{{ saved_area.area }}</span>
+                        </div>
+                        <small>
+                            {% if saved_area.email_alerts %}
+                                Email {{ saved_area.alert_minutes_before }} minutes before outage
+                            {% else %}
+                                Email alerts off
+                            {% endif %}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <div class="dashboard-empty compact">
+                        <p>No tracked areas yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </section>
 
             <section class="profile-info-panel">

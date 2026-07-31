@@ -7,7 +7,7 @@
             <div>
                 <span class="home-kicker">User Dashboard</span>
                 <h1>Welcome back, {{ request.user.username }}</h1>
-                <p>Monitor your saved backup plan, notices, and quick actions from one clean control center.</p>
+                <p>Monitor your saved areas, outage windows, notices, and backup load from one clean control center.</p>
             </div>
 
             <button type="button" class="dashboard-setup-btn open-setup-modal">
@@ -45,6 +45,100 @@
                 <strong>{{ notice_count }}</strong>
                 <small>Published power updates</small>
             </article>
+        </div>
+
+        <div class="dashboard-grid">
+            <section class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">Saved Areas</span>
+                        <h2>Home, office, and everywhere important</h2>
+                    </div>
+                    <a href="{% url 'schedule' %}" class="dashboard-link">Open Calendar</a>
+                </div>
+
+                <div class="saved-area-grid">
+                    {% for item in area_statuses %}
+                    <article class="saved-area-card">
+                        <div class="saved-area-top">
+                            <div>
+                                <strong>{{ item.saved_area.label }}</strong>
+                                <span>{{ item.area.area_name }}, {{ item.area.upazila }}</span>
+                            </div>
+                            <span class="power-pill {% if item.is_power_off %}off{% else %}on{% endif %}">
+                                {% if item.is_power_off %}Power OFF{% else %}Power ON{% endif %}
+                            </span>
+                        </div>
+                        <p>
+                            {% if item.current_outage %}
+                                Outage ends at {{ item.current_outage.end_time }}.
+                            {% elif item.next_outage %}
+                                Next outage starts at {{ item.next_outage.start_time }}.
+                            {% else %}
+                                No more scheduled outages today.
+                            {% endif %}
+                        </p>
+                        <small>
+                            Email alerts:
+                            {% if item.saved_area.email_alerts %}
+                                {{ item.saved_area.alert_minutes_before }} minutes before
+                            {% else %}
+                                Off
+                            {% endif %}
+                        </small>
+                        <form method="POST" action="{% url 'delete_area' item.saved_area.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="dashboard">
+                            <button type="submit" class="text-action danger">Remove</button>
+                        </form>
+                    </article>
+                    {% empty %}
+                    <div class="dashboard-empty">
+                        <h3>No saved areas yet</h3>
+                        <p>Add Home, Office, or another area to track all upcoming outages from this dashboard.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form class="inline-preference-form" method="POST" action="{% url 'save_area' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="dashboard">
+                    <input class="form-input" type="text" name="label" placeholder="Label, e.g. Home or Office">
+                    <select class="form-input" name="area">
+                        <option value="">Choose area</option>
+                        {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area.district }} - {{ area.upazila }} - {{ area.area_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input class="form-input" type="number" name="alert_minutes_before" value="30" min="5">
+                    <label class="toggle-row">
+                        <input type="checkbox" name="email_alerts" checked>
+                        <span>Email alerts</span>
+                    </label>
+                    <button class="schedule-btn" type="submit">Save Area</button>
+                </form>
+            </section>
+
+            <aside class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <span class="home-kicker">IPS Load</span>
+                        <h2>Capacity vs appliance load</h2>
+                    </div>
+                </div>
+                <div class="load-chart">
+                    <div class="load-ring" style="--percent: {{ capacity_percent }}%">
+                        <span>{{ capacity_percent }}%</span>
+                    </div>
+                    <div class="load-chart-meta">
+                        <strong>{{ total_watt }} W</strong>
+                        <span>of {% if setup %}{{ setup.ips_capacity }} VA{% else %}unsaved capacity{% endif %}</span>
+                    </div>
+                </div>
+                <div class="dashboard-empty compact">
+                    <p>Keep critical load comfortably below capacity for longer backup time during outages.</p>
+                </div>
+            </aside>
         </div>
 
         <div class="dashboard-grid">
@@ -105,6 +199,32 @@
                 </div>
             </aside>
         </div>
+
+        <section class="dashboard-panel feedback-panel">
+            <div class="dashboard-panel-header">
+                <div>
+                    <span class="home-kicker">Feedback</span>
+                    <h2>Report an issue or send a suggestion</h2>
+                </div>
+            </div>
+            <form method="POST" action="{% url 'feedback_create' %}" class="feedback-form">
+                {% csrf_token %}
+                <select class="form-input" name="feedback_type">
+                    <option>Schedule Issue</option>
+                    <option>Suggestion</option>
+                    <option>Other</option>
+                </select>
+                <select class="form-input" name="area">
+                    <option value="">Related area</option>
+                    {% for saved_area in saved_areas %}
+                    <option value="{{ saved_area.area.id }}">{{ saved_area.label }} - {{ saved_area.area.area_name }}</option>
+                    {% endfor %}
+                </select>
+                <input class="form-input" type="text" name="subject" placeholder="Subject">
+                <textarea class="form-input textarea-input" name="message" placeholder="What should the team know?"></textarea>
+                <button class="schedule-btn" type="submit">Send Feedback</button>
+            </form>
+        </section>
     </div>
 </section>
 {% endblock %}
