@@ -1098,121 +1098,59 @@ body{
 
 }
 
-/* ==========================================
+/* ===========================
    SMART IPS ADVISOR
-========================================== */
+=========================== */
 
-.ips-advisor{
-
-    max-width:1000px;
-
-    margin:40px auto;
-
-    padding:20px;
-
+.ips-hero{
+    width:100%;
+    padding:70px 20px;
 }
 
-.advisor-card,
-.advisor-result{
+.ips-container{
+    max-width:900px;
+    margin:auto;
+}
 
-    background:#142850;
+.ips-header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.ips-header h1{
+    font-size:52px;
+    color:#fff;
+    margin-bottom:12px;
+}
+
+.ips-header p{
+    font-size:20px;
+    color:#9aa8c7;
+}
+
+.ips-card{
+
+    background:#121a30;
 
     border:1px solid rgba(255,255,255,.08);
 
-    border-radius:18px;
+    border-radius:26px;
 
-    padding:25px;
-
-    margin-bottom:30px;
-
-    color:#fff;
-
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    padding:38px;
 
 }
 
-.advisor-card h2,
-.advisor-result h2{
-
-    margin-bottom:8px;
-
-    color:#4fc3f7;
-
-}
-
-.advisor-card p{
-
-    color:#cfd8dc;
-
-}
-
-hr{
-
-    border:none;
-
-    height:1px;
-
-    background:rgba(255,255,255,.08);
-
-    margin:22px 0;
-
-}
-
-.form-group{
-
-    margin-bottom:18px;
-
-}
-
-.advisor-card label{
-
-    display:block;
-
-    margin-bottom:8px;
-
-    font-weight:600;
-
-}
-
-.advisor-card input,
-.advisor-card select{
-
-    width:100%;
-
-    padding:12px;
-
-    border-radius:10px;
-
-    border:1px solid rgba(255,255,255,.1);
-
-    background:#1d3557;
-
-    color:white;
-
-    outline:none;
-
-    margin-bottom:15px;
-
-}
-
-.advisor-card input:focus,
-.advisor-card select:focus{
-
-    border-color:#4fc3f7;
-
-}
-
-.radio-group{
+.setup-choice{
 
     display:flex;
 
-    gap:25px;
+    gap:30px;
 
-    margin:15px 0;
+    margin-bottom:35px;
 
 }
 
-.radio-group label{
+.setup-choice label{
 
     display:flex;
 
@@ -1220,73 +1158,85 @@ hr{
 
     gap:8px;
 
+    color:#fff;
+
     cursor:pointer;
 
-}
-
-.saved-box{
-
-    background:#1b3355;
-
-    border-radius:12px;
-
-    padding:18px;
+    font-weight:500;
 
 }
 
-.saved-box h3{
+.form-group{
 
-    margin-bottom:15px;
-
-    color:#4fc3f7;
+    margin-bottom:25px;
 
 }
 
-.saved-box table{
+.form-group label{
+
+    display:block;
+
+    color:#fff;
+
+    margin-bottom:12px;
+
+    font-weight:600;
+
+}
+
+.form-group input,
+.form-group select{
 
     width:100%;
 
-    border-collapse:collapse;
-
-    margin-top:15px;
-
-}
-
-.saved-box th{
-
-    background:#24456d;
-
-    padding:10px;
-
-}
-
-.saved-box td{
-
-    padding:10px;
-
-    text-align:center;
-
-    border-top:1px solid rgba(255,255,255,.08);
-
-}
-
-button{
-
-    width:100%;
-
-    padding:14px;
+    height:58px;
 
     border:none;
 
-    border-radius:12px;
+    outline:none;
 
-    background:#0ea5e9;
+    border-radius:14px;
 
-    color:white;
+    background:#18223d;
+
+    color:#fff;
+
+    padding:0 18px;
 
     font-size:16px;
 
-    font-weight:bold;
+}
+
+.form-group input::placeholder{
+
+    color:#8d9cbc;
+
+}
+
+.form-group input:focus,
+.form-group select:focus{
+
+    border:1px solid #3b82f6;
+
+}
+
+.ips-btn{
+
+    width:100%;
+
+    height:60px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:linear-gradient(90deg,#234b83,#18325d);
+
+    color:#fff;
+
+    font-size:20px;
+
+    font-weight:600;
 
     cursor:pointer;
 
@@ -1294,39 +1244,67 @@ button{
 
 }
 
-button:hover{
+.ips-btn:hover{
 
-    background:#0284c7;
+    transform:translateY(-2px);
 
-}
-
-.advisor-result p{
-
-    margin:12px 0;
-
-    font-size:16px;
+    background:linear-gradient(90deg,#29579a,#1d3f72);
 
 }
 
-.advisor-result h3{
+/* RESULT */
 
-    margin-top:18px;
+.result-card{
 
-    color:#4fc3f7;
+    margin-top:35px;
+
+    background:#121a30;
+
+    border-radius:26px;
+
+    padding:35px;
+
+    border:1px solid rgba(255,255,255,.08);
 
 }
 
-.advisor-result ul{
+.result-card h2{
 
-    margin-top:10px;
+    color:#fff;
 
-    margin-left:20px;
+    margin-bottom:25px;
 
 }
 
-.advisor-result li{
+.result-item{
 
-    margin-bottom:10px;
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:15px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.result-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.result-title{
+
+    color:#9aa8c7;
+
+}
+
+.result-value{
+
+    color:#fff;
+
+    font-weight:600;
 
 }
 
@@ -1334,47 +1312,67 @@ button:hover{
 
     color:#22c55e;
 
-    font-weight:bold;
-
-}
-
-.status-warning{
-
-    color:#f59e0b;
-
-    font-weight:bold;
-
 }
 
 .status-danger{
 
     color:#ef4444;
 
-    font-weight:bold;
+}
+
+.recommendation{
+
+    margin-top:25px;
+
+    padding:20px;
+
+    border-radius:16px;
+
+    background:#1b2645;
 
 }
 
-/* Responsive */
+.recommendation h3{
+
+    color:#fff;
+
+    margin-bottom:15px;
+
+}
+
+.recommendation ul{
+
+    margin-left:20px;
+
+}
+
+.recommendation li{
+
+    color:#fff;
+
+    margin-bottom:10px;
+
+}
 
 @media(max-width:768px){
 
-    .ips-advisor{
+    .ips-header h1{
 
-        padding:15px;
+        font-size:38px;
 
     }
 
-    .radio-group{
+    .setup-choice{
 
         flex-direction:column;
 
-        gap:10px;
+        gap:12px;
 
     }
 
-    .saved-box table{
+    .ips-card{
 
-        font-size:14px;
+        padding:25px;
 
     }
 
