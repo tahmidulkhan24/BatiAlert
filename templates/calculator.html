@@ -1,211 +1,465 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 
-<section class="ips-section">
+<section class="calculator-section">
 
-    <div class="ips-container">
+    <div class="calculator-container">
 
-        <div class="ips-title">
+ <!-- ======================================================
+     HERO SECTION
+====================================================== -->
 
-            <h1>⚡ Smart IPS Advisor</h1>
+<div class="calculator-header">
+
+    <div class="hero-left">
+
+        <h1 class="calculator-title">
+            Calculate Backup
+        </h1>
+
+        <p class="calculator-subtitle">
+            Know whether your IPS backup can survive today's scheduled load shedding.
+        </p>
+
+    </div>
+
+    <div class="hero-right">
+
+        <div class="hero-mini-logo">
+
+            <svg
+                viewBox="0 0 24 24"
+                width="34"
+                height="34"
+                fill="none">
+
+                <rect
+                    x="5"
+                    y="3"
+                    width="12"
+                    height="18"
+                    rx="2"
+                    stroke="white"
+                    stroke-width="2"/>
+
+                <rect
+                    x="17"
+                    y="9"
+                    width="2"
+                    height="6"
+                    fill="white"/>
+
+                <path
+                    d="M10 7L8.5 12H11L10 17L14.5 11H12L13.5 7Z"
+                    fill="white"/>
+
+            </svg>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     SETUP SELECTION
+====================================================== -->
+
+<div class="setup-selection">
+
+    <h2 class="section-title">
+        Select IPS Configuration
+    </h2>
+
+    <p class="section-description">
+        Choose how you want to analyze your backup system.
+    </p>
+
+    <div class="setup-card-wrapper">
+
+        <!-- SAVED -->
+
+        <div
+            class="setup-card active"
+            id="savedSetupCard"
+            data-mode="saved">
+
+            <div class="setup-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    width="30"
+                    height="30"
+                    fill="none">
+
+                    <rect
+                        x="5"
+                        y="3"
+                        width="12"
+                        height="18"
+                        rx="2"
+                        stroke="white"
+                        stroke-width="2"/>
+
+                    <rect
+                        x="17"
+                        y="9"
+                        width="2"
+                        height="6"
+                        fill="white"/>
+
+                    <path
+                        d="M8 11H15"
+                        stroke="white"
+                        stroke-width="2"/>
+
+                    <path
+                        d="M8 15H13"
+                        stroke="white"
+                        stroke-width="2"/>
+
+                </svg>
+
+            </div>
+
+            <h3>
+
+                Use My Saved Setup
+
+            </h3>
 
             <p>
-                Estimate your IPS backup based on today's load shedding schedule.
+
+                Use your previously saved IPS configuration.
+
             </p>
 
         </div>
 
-        <div class="ips-card">
 
-            <form method="POST">
+        <!-- TEMP -->
 
-                {% csrf_token %}
+        <div
+            class="setup-card"
+            id="temporarySetupCard"
+            data-mode="temporary">
 
-                <div class="form-group">
+            <div class="setup-icon">
 
-                    <label>
+                <svg
+                    viewBox="0 0 24 24"
+                    width="30"
+                    height="30"
+                    fill="none">
 
-                        Use Setup
+                    <rect
+                        x="5"
+                        y="3"
+                        width="12"
+                        height="18"
+                        rx="2"
+                        stroke="white"
+                        stroke-width="2"/>
 
-                    </label>
+                    <rect
+                        x="17"
+                        y="9"
+                        width="2"
+                        height="6"
+                        fill="white"/>
 
-                    <div class="setup-options">
+                    <path
+                        d="M10 7L8.5 12H11L10 17L14.5 11H12L13.5 7Z"
+                        fill="white"/>
 
-                        <label class="setup-option">
+                </svg>
 
-                            <input
-                                type="radio"
-                                name="setup"
-                                value="saved"
-                                checked
-                            >
+            </div>
 
-                            <span>
-                                Saved Setup
-                            </span>
+            <h3>
 
-                        </label>
+                Use Another IPS
 
-                        <label class="setup-option">
+            </h3>
 
-                            <input
-                                type="radio"
-                                name="setup"
-                                value="new"
-                            >
+            <p>
 
-                            <span>
-                                Another IPS
-                            </span>
+                Create a temporary IPS setup.
 
-                        </label>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- =========================
+             SAVED SETUP
+        ========================== -->
+
+        <div class="saved-setup-section" id="savedSetupSection">
+
+            <div class="glass-card">
+
+                <div class="card-header">
+
+                    <h2>
+                        Saved IPS Configuration
+                    </h2>
+
+                    <span class="saved-badge">
+                        Saved Setup
+                    </span>
+
+                </div>
+
+                <div class="saved-grid">
+
+                    <div class="saved-item">
+
+                        <span class="saved-label">
+                            IPS Capacity
+                        </span>
+
+                        <h3>
+                            1200 VA
+                        </h3>
+
+                    </div>
+
+                    <div class="saved-item">
+
+                        <span class="saved-label">
+                            Battery Capacity
+                        </span>
+
+                        <h3>
+                            150 Ah
+                        </h3>
 
                     </div>
 
                 </div>
 
-                <!-- SAVED SETUP -->
 
-                <div id="savedSetup">
+                <div class="saved-appliances">
 
-                    <div class="saved-card">
+                    <h3>
+                        Saved Appliances
+                    </h3>
 
-                        <h3>Your Saved Setup</h3>
+                    <table class="appliance-table">
 
-                        <div class="saved-row">
+                        <thead>
 
-                            <span>IPS Capacity</span>
+                            <tr>
 
-                            <strong>850 VA</strong>
+                                <th>Appliance</th>
+                                <th>Quantity</th>
+                                <th>Priority</th>
 
-                        </div>
+                            </tr>
 
-                        <table class="setup-table">
+                        </thead>
 
-                            <thead>
+                        <tbody>
 
-                                <tr>
+                            <tr>
 
-                                    <th>Appliance</th>
+                                <td>Fan</td>
+                                <td>2</td>
+                                <td>High</td>
 
-                                    <th>Qty</th>
+                            </tr>
 
-                                    <th>Priority</th>
+                            <tr>
 
-                                </tr>
+                                <td>LED Light</td>
+                                <td>4</td>
+                                <td>High</td>
 
-                            </thead>
+                            </tr>
 
-                            <tbody>
+                            <tr>
 
-                                <tr>
+                                <td>Television</td>
+                                <td>1</td>
+                                <td>Medium</td>
 
-                                    <td>Fan</td>
+                            </tr>
 
-                                    <td>2</td>
+                            <tr>
 
-                                    <td>Highest</td>
+                                <td>WiFi Router</td>
+                                <td>1</td>
+                                <td>High</td>
 
-                                </tr>
+                            </tr>
 
-                                <tr>
+                        </tbody>
 
-                                    <td>Light</td>
-
-                                    <td>4</td>
-
-                                    <td>Highest</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>TV</td>
-
-                                    <td>1</td>
-
-                                    <td>Medium</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Router</td>
-
-                                    <td>1</td>
-
-                                    <td>Highest</td>
-
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                    </table>
 
                 </div>
 
-                <!-- NEW IPS -->
 
-                <div
-                    id="newSetup"
-                    style="display:none;"
-                >
+                <div class="saved-input-grid">
 
                     <div class="form-group">
 
-                        <label>
+                        <label class="form-label">
+                            Battery Voltage
+                        </label>
 
-                            IPS Capacity (VA)
+                        <select class="form-input">
 
+                            <option>12V</option>
+                            <option>24V</option>
+                            <option>48V</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Area
+                        </label>
+
+                        <select class="form-input">
+
+                            <option>Select Area</option>
+                            <option>Mohammadpur</option>
+                            <option>Dhanmondi</option>
+                            <option>Mirpur</option>
+                            <option>Uttara</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             TEMPORARY SETUP
+        ========================== -->
+
+        <div
+            class="temporary-setup-section hidden"
+            id="temporarySetupSection">
+
+            <div class="glass-card">
+
+                <div class="card-header">
+
+                    <h2>
+                        Temporary IPS Setup
+                    </h2>
+
+                </div>
+
+                <div class="setup-form-grid">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            IPS Capacity
                         </label>
 
                         <input
                             type="number"
-                            placeholder="850"
-                        >
+                            class="form-input"
+                            placeholder="1200">
 
                     </div>
 
                     <div class="form-group">
 
-                        <label>
-
-                            Appliances
-
+                        <label class="form-label">
+                            Battery Voltage
                         </label>
 
-                        <div class="new-appliance">
+                        <select class="form-input">
 
-                            <select>
+                            <option>12V</option>
+                            <option>24V</option>
+                            <option>48V</option>
 
-                                <option>
-                                    Fan
-                                </option>
+                        </select>
 
-                            </select>
+                    </div>
 
-                            <input
-                                type="number"
-                                placeholder="Qty"
-                            >
+                    <div class="form-group">
 
-                            <select>
+                        <label class="form-label">
+                            Battery Capacity (Ah)
+                        </label>
 
-                                <option>
-                                    Highest
-                                </option>
+                        <input
+                            type="number"
+                            class="form-input"
+                            placeholder="150">
 
-                            </select>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Area
+                        </label>
+
+                        <select class="form-input">
+
+                            <option>Select Area</option>
+                            <option>Mohammadpur</option>
+                            <option>Dhanmondi</option>
+                            <option>Mirpur</option>
+                            <option>Uttara</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Appliance Builder starts here in Part 2 -->
+
+            </div>
+
+        </div>
+                        <!-- =========================
+                     APPLIANCE BUILDER
+                ========================== -->
+
+                <div class="appliance-builder">
+
+                    <div class="builder-header">
+
+                        <div>
+
+                            <h2>
+                                Appliance Builder
+                            </h2>
+
+                            <p>
+                                Add appliances you want to run during load shedding.
+                            </p>
 
                         </div>
 
                         <button
                             type="button"
-                            class="add-btn"
-                        >
+                            class="add-appliance-btn"
+                            id="addApplianceBtn">
 
                             + Add Appliance
 
@@ -213,232 +467,530 @@
 
                     </div>
 
+                    <div id="applianceContainer">
+
+                        <!-- Appliance Row -->
+
+                        <div class="appliance-row">
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Appliance
+                                </label>
+
+                                <select class="form-input appliance-select">
+
+                                    <option>LED Light</option>
+                                    <option>Fan</option>
+                                    <option>Television</option>
+                                    <option>WiFi Router</option>
+                                    <option>Desktop PC</option>
+                                    <option>Laptop</option>
+                                    <option>Refrigerator</option>
+                                    <option>Rice Cooker</option>
+                                    <option>Air Cooler</option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Quantity
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-input quantity-input"
+                                    value="1"
+                                    min="1">
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Priority
+                                </label>
+
+                                <select class="form-input">
+
+                                    <option>High</option>
+                                    <option>Medium</option>
+                                    <option>Low</option>
+
+                                </select>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="remove-appliance-btn">
+
+                                Remove
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="form-group">
-
-                    <label>
-
-                        Battery Voltage
-
-                    </label>
-
-                    <input
-                        type="number"
-                        placeholder="12"
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>
-
-                        Battery Capacity (Ah)
-
-                    </label>
-
-                    <input
-                        type="number"
-                        placeholder="150"
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>
-
-                        Area
-
-                    </label>
-
-                    <select>
-
-                        <option>
-                            Select Area
-                        </option>
-
-                        <option>
-                            Adabor
-                        </option>
-
-                        <option>
-                            Dhanmondi
-                        </option>
-
-                        <option>
-                            Mirpur
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <button
-                    class="ips-btn"
-                    type="submit"
-                >
-
-                    Analyze My IPS
-
-                </button>
-
-            </form>
+            </div>
 
         </div>
-                <!-- ==========================
+
+
+        <!-- =========================
+             ANALYZE SECTION
+        ========================== -->
+
+        <div class="analyze-section">
+
+            <button
+                class="analyze-btn"
+                id="analyzeBtn">
+
+
+                Analyze My IPS
+
+            </button>
+
+            <p class="analyze-note">
+
+                AI-powered estimation based on your IPS configuration and today's
+                scheduled load shedding.
+
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             LOADING
+        ========================== -->
+
+        <div
+            class="loading-section hidden"
+            id="loadingSection">
+
+            <div class="loading-card">
+
+                <div class="loading-spinner"></div>
+
+                <h2>
+                    Analyzing Your IPS...
+                </h2>
+
+                <p>
+
+                    Calculating battery backup, load, today's schedule and
+                    optimization recommendations.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
              RESULT SECTION
-        =========================== -->
+        ========================== -->
 
-        <div class="ips-dashboard">
+        <div
+            class="analysis-dashboard hidden"
+            id="analysisDashboard">
+                        <!-- =========================
+                 TODAY'S LOAD SHEDDING
+            ========================== -->
 
-            <!-- Today's Schedule -->
+            <div class="analysis-grid">
 
-            <div class="dashboard-card">
+                <div class="glass-card schedule-result-card">
 
-                <h3>⚡ Today's Load Shedding</h3>
+                    <div class="card-header">
 
-                <div class="dashboard-row">
+                        <h2>
+                            Today's Load Shedding
+                        </h2>
 
-                    <span>Area</span>
+                        <span class="live-badge">
+                            LIVE
+                        </span>
 
-                    <strong>Adabor</strong>
+                    </div>
+
+                    <div class="schedule-info">
+
+                        <div class="info-row">
+
+                            <span>Area</span>
+
+                            <strong id="resultArea">
+                                Mohammadpur
+                            </strong>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <span>Start Time</span>
+
+                            <strong id="startTime">
+                                2:00 PM
+                            </strong>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <span>End Time</span>
+
+                            <strong id="endTime">
+                                4:00 PM
+                            </strong>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <span>Duration</span>
+
+                            <strong id="duration">
+                                2 Hours
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="schedule-status success"
+                        id="scheduleStatus">
+
+                        Scheduled Today
+
+                    </div>
 
                 </div>
 
-                <div class="dashboard-row">
 
-                    <span>Schedule</span>
 
-                    <strong>6:00 PM - 10:00 PM</strong>
+                <!-- IPS SUMMARY -->
 
-                </div>
+                <div class="glass-card summary-result-card">
 
-                <div class="dashboard-row">
+                    <div class="card-header">
 
-                    <span>Duration</span>
+                        <h2>
 
-                    <strong>4 Hours</strong>
+                            IPS Summary
+
+                        </h2>
+
+                    </div>
+
+                    <div class="summary-values">
+
+                        <div class="summary-item">
+
+                            <span>
+
+                                Estimated Backup
+
+                            </span>
+
+                            <h2 id="backupTime">
+
+                                5.8 Hours
+
+                            </h2>
+
+                        </div>
+
+                        <div class="summary-item">
+
+                            <span>
+
+                                Total Load
+
+                            </span>
+
+                            <h2 id="totalLoad">
+
+                                320 W
+
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="status-badge ready"
+                        id="backupStatus">
+
+                        READY
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <!-- IPS Summary -->
 
-            <div class="dashboard-card">
 
-                <h3>🔋 IPS Summary</h3>
+            <!-- =========================
+                 BATTERY GAUGE
+            ========================== -->
 
-                <div class="dashboard-row">
+            <div class="glass-card battery-card">
 
-                    <span>Estimated Backup</span>
+                <div class="card-header">
 
-                    <strong>3h 35m</strong>
+                    <h2>
 
-                </div>
+                        Battery Health
 
-                <div class="dashboard-row">
-
-                    <span>Total Load</span>
-
-                    <strong>345W</strong>
+                    </h2>
 
                 </div>
 
-                <div class="dashboard-row">
+                <div class="battery-wrapper">
 
-                    <span>Status</span>
+                    <div class="battery-circle">
 
-                    <strong class="danger">
+                        <div class="battery-inner">
 
-                        Backup Not Enough
+                            <span
+                                class="battery-percent"
+                                id="batteryPercent">
 
-                    </strong>
+                                72%
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="battery-details">
+
+                        <h3>
+
+                            Estimated Backup
+
+                        </h3>
+
+                        <h2 id="batteryBackup">
+
+                            5 Hours 48 Minutes
+
+                        </h2>
+
+                        <p>
+
+                            Enough battery for today's scheduled outage.
+
+                        </p>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <!-- Recommendation -->
 
-            <div class="dashboard-card">
 
-                <h3>💡 Recommendation</h3>
+            <!-- =========================
+                 RECOMMENDATION
+            ========================== -->
 
-                <ul class="recommend-list">
+            <div class="glass-card recommendation-section">
 
-                    <li>Turn OFF TV</li>
+                <div class="card-header">
 
-                    <li>Turn OFF One Fan</li>
+                    <h2>
 
-                </ul>
+                        Smart Recommendation
 
-                <hr>
+                    </h2>
 
-                <div class="dashboard-row">
+                    <span>
 
-                    <span>New Backup</span>
+                        AI Suggestion
 
-                    <strong class="success">
+                    </span>
 
-                        4h 20m
+                </div>
 
-                    </strong>
+                <div class="recommendation-grid">
+
+                    <div class="recommend-card">
+
+                        <div class="recommend-icon">
+
+                            📺
+
+                        </div>
+
+                        <h3>
+
+                            Turn OFF TV
+
+                        </h3>
+
+                        <p>
+
+                            Save around 90W
+
+                        </p>
+
+                    </div>
+
+                    <div class="recommend-card">
+
+                        <div class="recommend-icon">
+
+                            🌀
+
+                        </div>
+
+                        <h3>
+
+                            Turn OFF One Fan
+
+                        </h3>
+
+                        <p>
+
+                            Save around 75W
+
+                        </p>
+
+                    </div>
+
+                    <div class="recommend-card">
+
+                        <div class="recommend-icon">
+
+                            🍚
+
+                        </div>
+
+                        <h3>
+
+                            Avoid Rice Cooker
+
+                        </h3>
+
+                        <p>
+
+                            Heavy power consumption
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="optimized-result">
+
+                    <span>
+
+                        Estimated Backup After Recommendation
+
+                    </span>
+
+                    <h2>
+
+                        7 Hours 12 Minutes
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =========================
+                 SUMMARY CARDS
+            ========================== -->
+
+            <div class="summary-card-grid">
+
+                <div class="mini-summary-card">
+
+                    <span>
+
+                        Total Load
+
+                    </span>
+
+                    <h2 id="summaryLoad">
+
+                        320 W
+
+                    </h2>
+
+                </div>
+
+                <div class="mini-summary-card">
+
+                    <span>
+
+                        Appliances
+
+                    </span>
+
+                    <h2 id="summaryAppliance">
+
+                        8
+
+                    </h2>
+
+                </div>
+
+                <div class="mini-summary-card">
+
+                    <span>
+
+                        Runtime
+
+                    </span>
+
+                    <h2 id="summaryRuntime">
+
+                        5.8 H
+
+                    </h2>
+
+                </div>
+
+                <div class="mini-summary-card">
+
+                    <span>
+
+                        Battery
+
+                    </span>
+
+                    <h2 id="summaryBattery">
+
+                        150 Ah
+
+                    </h2>
 
                 </div>
 
             </div>
 
         </div>
-
-        <!-- SUCCESS CARD -->
-
-        <div class="advisor-message success-box">
-
-            <h2>
-
-                ✅ Ready for Today's Load Shedding
-
-            </h2>
-
-            <p>
-
-                Your IPS can support today's outage after applying the recommendations.
-
-            </p>
-
-        </div>
-
-        <!-- NO LOAD SHEDDING -->
-
-        <!--
-
-        <div class="advisor-message">
-
-            <h2>
-
-                🎉 No Load Shedding Today
-
-            </h2>
-
-            <p>
-
-                There is no scheduled outage today.
-
-            </p>
-
-            <p>
-
-                Estimated IPS Backup :
-                <strong>3 Hours 35 Minutes</strong>
-
-            </p>
-
-        </div>
-
-        -->
 
     </div>
 
