@@ -1,4 +1,11 @@
 /* ==========================
+   UTILITY - HIDDEN
+========================== */
+
+.hidden{
+  display:none !important;
+}
+/* ==========================
    RESET + THEME
 ========================== */
 
@@ -2666,4 +2673,19 @@ body{
 
     }
 
+}
+/*==================================================
+    DASHBOARD CARD SPACING FIX
+==================================================*/
+
+.battery-card{
+    margin-bottom:24px;
+}
+
+.recommendation-section{
+    margin-bottom:24px;
+}
+
+.summary-card-grid{
+    margin-top:0;
 }

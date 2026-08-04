@@ -6,994 +6,467 @@
 
     <div class="calculator-container">
 
- <!-- ======================================================
-     HERO SECTION
-====================================================== -->
-
 <div class="calculator-header">
 
     <div class="hero-left">
-
-        <h1 class="calculator-title">
-            Calculate Backup
-        </h1>
-
+        <h1 class="calculator-title">Calculate Backup</h1>
         <p class="calculator-subtitle">
             Know whether your IPS backup can survive today's scheduled load shedding.
         </p>
-
     </div>
 
     <div class="hero-right">
-
         <div class="hero-mini-logo">
-
-            <svg
-                viewBox="0 0 24 24"
-                width="34"
-                height="34"
-                fill="none">
-
-                <rect
-                    x="5"
-                    y="3"
-                    width="12"
-                    height="18"
-                    rx="2"
-                    stroke="white"
-                    stroke-width="2"/>
-
-                <rect
-                    x="17"
-                    y="9"
-                    width="2"
-                    height="6"
-                    fill="white"/>
-
-                <path
-                    d="M10 7L8.5 12H11L10 17L14.5 11H12L13.5 7Z"
-                    fill="white"/>
-
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none">
+                <path d="M13 2L6 13H11L10 22L18 10H13V2Z" fill="white"/>
             </svg>
-
         </div>
-
     </div>
 
 </div>
 
-
-<!-- ======================================================
-     SETUP SELECTION
-====================================================== -->
+<form method="POST" id="calculatorForm">
+    {% csrf_token %}
+    <input type="hidden" name="mode" id="modeInput" value="saved">
 
 <div class="setup-selection">
-
-    <h2 class="section-title">
-        Select IPS Configuration
-    </h2>
-
-    <p class="section-description">
-        Choose how you want to analyze your backup system.
-    </p>
+    <h2 class="section-title">Select IPS Configuration</h2>
+    <p class="section-description">Choose how you want to analyze your backup system.</p>
 
     <div class="setup-card-wrapper">
 
-        <!-- SAVED -->
-
-        <div
-            class="setup-card active"
-            id="savedSetupCard"
-            data-mode="saved">
-
+        <div class="setup-card active" id="savedSetupCard" data-mode="saved">
             <div class="setup-icon">
 
-                <svg
-                    viewBox="0 0 24 24"
-                    width="30"
-                    height="30"
-                    fill="none">
+    <svg
+        width="30"
+        height="30"
+        viewBox="0 0 24 24"
+        fill="none">
 
-                    <rect
-                        x="5"
-                        y="3"
-                        width="12"
-                        height="18"
-                        rx="2"
-                        stroke="white"
-                        stroke-width="2"/>
+        <rect
+            x="6"
+            y="5"
+            width="12"
+            height="15"
+            rx="2"
+            stroke="white"
+            stroke-width="2"/>
 
-                    <rect
-                        x="17"
-                        y="9"
-                        width="2"
-                        height="6"
-                        fill="white"/>
+        <rect
+            x="9"
+            y="3"
+            width="6"
+            height="4"
+            rx="1.5"
+            fill="white"/>
 
-                    <path
-                        d="M8 11H15"
-                        stroke="white"
-                        stroke-width="2"/>
+        <line
+            x1="9"
+            y1="10"
+            x2="15"
+            y2="10"
+            stroke="white"
+            stroke-width="1.7"
+            stroke-linecap="round"/>
 
-                    <path
-                        d="M8 15H13"
-                        stroke="white"
-                        stroke-width="2"/>
+        <line
+            x1="9"
+            y1="14"
+            x2="15"
+            y2="14"
+            stroke="white"
+            stroke-width="1.7"
+            stroke-linecap="round"/>
 
-                </svg>
+    </svg>
 
+</div>
+            <h3>Use My Saved Setup</h3>
+            <p>Use your previously saved IPS configuration.</p>
+        </div>
+
+        <div class="setup-card" id="temporarySetupCard" data-mode="temporary">
+            <div class="setup-icon">
+
+    <svg
+        width="30"
+        height="30"
+        viewBox="0 0 24 24"
+        fill="none">
+
+        <rect
+            x="3"
+            y="7"
+            width="16"
+            height="10"
+            rx="2"
+            stroke="white"
+            stroke-width="2"/>
+
+        <rect
+            x="19"
+            y="10"
+            width="2"
+            height="4"
+            fill="white"/>
+
+        <path
+            d="M7 10H13V14H7Z"
+            fill="white"
+            opacity=".2"/>
+
+    </svg>
+
+</div>
+            <h3>Use Another IPS</h3>
+            <p>Create a temporary IPS setup.</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================
+     SAVED SETUP SECTION
+============================================= -->
+
+<div class="saved-setup-section" id="savedSetupSection">
+    <div class="glass-card">
+
+        <div class="card-header">
+            <h2>Saved IPS Configuration</h2>
+            <span class="saved-badge">Saved Setup</span>
+        </div>
+
+        <div class="saved-grid">
+            <div class="saved-item">
+                <span class="saved-label">IPS Capacity</span>
+                <h3>
+                    {% if saved_setup %}{{ saved_setup.ips_capacity }} VA{% else %}Not Configured{% endif %}
+                </h3>
             </div>
 
-            <h3>
+            <div class="saved-item">
+                <span class="saved-label">Total Saved Appliances</span>
+                <h3>{{ appliances|length }}</h3>
+            </div>
+        </div>
 
-                Use My Saved Setup
+        <div class="saved-appliances">
+            <h3>Saved Appliances</h3>
+            <table class="appliance-table">
+                <thead>
+                    <tr>
+                        <th>Appliance</th>
+                        <th>Quantity</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in appliances %}
+                    <tr>
+                        <td>{{ item.appliance.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>
+                            {% if item.priority == 1 %}High
+                            {% elif item.priority == 2 %}Medium
+                            {% else %}Low
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3">No Saved Appliances</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-            </h3>
+        <!-- USER INPUT: Area + Voltage + Battery (saved mode) -->
 
-            <p>
+        <div class="saved-input-grid">
 
-                Use your previously saved IPS configuration.
+            <div class="form-group">
+                <label class="form-label">District</label>
+                <select id="savedDistrict" class="form-input" name="district_saved">
+                    <option value="">Select District</option>
+                    {% for district in districts %}
+                    <option value="{{ district }}">{{ district }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            </p>
+            <div class="form-group">
+                <label class="form-label">Upazila</label>
+                <select id="savedUpazila" class="form-input" name="upazila_saved">
+                    <option value="">Select Upazila</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Area</label>
+                <select id="savedArea" class="form-input" name="area_saved">
+                    <option value="">Select Area</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Battery Voltage</label>
+                <select class="form-input" name="battery_voltage">
+                    <option value="12">12V</option>
+                    <option value="24">24V</option>
+                    <option value="48">48V</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Battery Capacity (Ah)</label>
+                <input type="number" class="form-input" name="battery_capacity" placeholder="Enter Battery Capacity" required>
+            </div>
 
         </div>
 
+    </div>
+</div>
 
-        <!-- TEMP -->
+<!-- ============================================
+     TEMPORARY SETUP SECTION
+============================================= -->
 
-        <div
-            class="setup-card"
-            id="temporarySetupCard"
-            data-mode="temporary">
+<div class="temporary-setup-section hidden" id="temporarySetupSection">
+    <div class="glass-card">
 
-            <div class="setup-icon">
+        <div class="card-header">
+            <h2>Temporary IPS Setup</h2>
+            <span class="saved-badge">Temporary</span>
+        </div>
 
-                <svg
-                    viewBox="0 0 24 24"
-                    width="30"
-                    height="30"
-                    fill="none">
+        <div class="setup-form-grid">
 
-                    <rect
-                        x="5"
-                        y="3"
-                        width="12"
-                        height="18"
-                        rx="2"
-                        stroke="white"
-                        stroke-width="2"/>
-
-                    <rect
-                        x="17"
-                        y="9"
-                        width="2"
-                        height="6"
-                        fill="white"/>
-
-                    <path
-                        d="M10 7L8.5 12H11L10 17L14.5 11H12L13.5 7Z"
-                        fill="white"/>
-
-                </svg>
-
+            <div class="form-group">
+                <label class="form-label">IPS Capacity (VA)</label>
+                <input type="number" class="form-input" name="ips_capacity" placeholder="Enter IPS Capacity" required>
             </div>
 
-            <h3>
+            <div class="form-group">
+                <label class="form-label">Battery Voltage</label>
+                <select class="form-input" name="battery_voltage_temp">
+                    <option value="12">12V</option>
+                    <option value="24">24V</option>
+                    <option value="48">48V</option>
+                </select>
+            </div>
 
-                Use Another IPS
+            <div class="form-group">
+                <label class="form-label">Battery Capacity (Ah)</label>
+                <input type="number" class="form-input" name="battery_capacity_temp" placeholder="Enter Battery Capacity" required>
+            </div>
 
-            </h3>
+            <div class="form-group">
+                <label class="form-label">District</label>
+                <select id="district" class="form-input" name="district">
+                    <option value="">Select District</option>
+                    {% for district in districts %}
+                    <option value="{{ district }}">{{ district }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            <p>
+            <div class="form-group">
+                <label class="form-label">Upazila</label>
+                <select id="upazila" class="form-input" name="upazila">
+                    <option value="">Select Upazila</option>
+                </select>
+            </div>
 
-                Create a temporary IPS setup.
-
-            </p>
+            <div class="form-group">
+                <label class="form-label">Area</label>
+                <select id="area" class="form-input" name="area">
+                    <option value="">Select Area</option>
+                </select>
+            </div>
 
         </div>
 
+        <div class="appliance-builder">
+
+            <div class="builder-header">
+                <div>
+                    <h2>Appliance Builder</h2>
+                    <p>Select the appliances you want to run during load shedding.</p>
+                </div>
+                <button type="button" class="add-appliance-btn" id="addApplianceBtn">+ Add Appliance</button>
+            </div>
+
+            <div id="applianceContainer">
+                <div class="appliance-row">
+
+                    <div class="form-group">
+                        <label class="form-label">Appliance</label>
+                        <select class="form-input appliance-select" name="appliance[]">
+                            {% for appliance in appliances_list %}
+                            <option value="{{ appliance.id }}">{{ appliance.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input quantity-input" name="quantity[]" value="1" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-input" name="priority[]">
+                            <option value="1">High</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Low</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="remove-appliance-btn">Remove</button>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="analyze-section">
+    <button type="submit" class="analyze-btn" name="analyze">Analyze My IPS</button>
+    <p class="analyze-note">
+        AI-powered estimation based on your IPS configuration and today's scheduled load shedding.
+    </p>
+</div>
+
+<div class="loading-section hidden" id="loadingSection">
+    <div class="loading-card">
+        <div class="loading-spinner"></div>
+        <h2>Analyzing Your IPS...</h2>
+        <p>Calculating battery backup, load, today's schedule and optimization recommendations.</p>
+    </div>
+</div>
+
+{% if result %}
+<div class="analysis-dashboard" id="analysisDashboard">
+{% else %}
+<div class="analysis-dashboard hidden" id="analysisDashboard">
+{% endif %}
+
+    <div class="analysis-grid">
+
+        <div class="glass-card schedule-result-card">
+            <div class="card-header">
+                <h2>Today's Load Shedding</h2>
+                <span class="live-badge">LIVE</span>
+            </div>
+            <div class="schedule-info">
+                <div class="info-row">
+                    <span>Area</span>
+                    <strong>{% if result.schedule %}{{ result.schedule.area }}{% else %}No Area{% endif %}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Start Time</span>
+                    <strong>{% if result.schedule %}{{ result.schedule.start_time }}{% else %}--{% endif %}</strong>
+                </div>
+                <div class="info-row">
+                    <span>End Time</span>
+                    <strong>{% if result.schedule %}{{ result.schedule.end_time }}{% else %}--{% endif %}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Duration</span>
+                    <strong>{% if result.schedule %}{{ result.schedule.duration }}{% else %}--{% endif %}</strong>
+                </div>
+            </div>
+            <div class="schedule-status success">
+                {% if result.schedule %}Scheduled Today{% else %}No Scheduled Load Shedding{% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card summary-result-card">
+            <div class="card-header"><h2>IPS Summary</h2></div>
+            <div class="summary-values">
+                <div class="summary-item">
+                    <span>Estimated Backup</span>
+                    <h2>{{ result.backup_time }} Hours</h2>
+                </div>
+                <div class="summary-item">
+                    <span>Total Load</span>
+                    <h2>{{ result.total_load }} W</h2>
+                </div>
+            </div>
+            <div class="status-badge">{{ result.status }}</div>
+        </div>
+
+    </div>
+
+    <div class="glass-card battery-card">
+        <div class="card-header"><h2>Battery Health</h2></div>
+        <div class="battery-wrapper">
+            <div class="battery-circle">
+                <div class="battery-inner">
+                    <span class="battery-percent">{{ result.battery_percent }}%</span>
+                </div>
+            </div>
+            <div class="battery-details">
+                <h3>Estimated Backup</h3>
+                <h2 id="batteryBackup">{{ result.backup_time }} Hours</h2>
+                <p>{{ result.battery_message }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card recommendation-section">
+        <div class="card-header">
+            <h2>Smart Recommendation</h2>
+            <span>AI Suggestion</span>
+        </div>
+        <div class="recommendation-grid">
+            {% for item in result.recommendation %}
+            <div class="recommend-card">
+                <div class="recommend-icon">⚡</div>
+                <h3>{{ item }}</h3>
+                <p>Recommended to improve backup time.</p>
+            </div>
+            {% empty %}
+            <div class="recommend-card">
+                <div class="recommend-icon">✅</div>
+                <h3>No Recommendation</h3>
+                <p>Your current setup is already optimized.</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="optimized-result">
+            <span>Estimated Backup</span>
+            <h2>{{ result.backup_time }} Hours</h2>
+        </div>
+    </div>
+
+    <div class="summary-card-grid">
+        <div class="mini-summary-card">
+            <span>Total Load</span>
+            <h2 id="summaryLoad">{{ result.total_load }} W</h2>
+        </div>
+        <div class="mini-summary-card">
+            <span>Appliances</span>
+            <h2 id="summaryAppliance">{{ result.total_appliance }}</h2>
+        </div>
+        <div class="mini-summary-card">
+            <span>Runtime</span>
+            <h2 id="summaryRuntime">{{ result.backup_time }} H</h2>
+        </div>
+        <div class="mini-summary-card">
+            <span>Battery</span>
+            <h2 id="summaryBattery">{{ result.battery_capacity }} Ah</h2>
+        </div>
     </div>
 
 </div>
 
-        <!-- =========================
-             SAVED SETUP
-        ========================== -->
-
-        <div class="saved-setup-section" id="savedSetupSection">
-
-            <div class="glass-card">
-
-                <div class="card-header">
-
-                    <h2>
-                        Saved IPS Configuration
-                    </h2>
-
-                    <span class="saved-badge">
-                        Saved Setup
-                    </span>
-
-                </div>
-
-                <div class="saved-grid">
-
-                    <div class="saved-item">
-
-                        <span class="saved-label">
-                            IPS Capacity
-                        </span>
-
-                        <h3>
-                            1200 VA
-                        </h3>
-
-                    </div>
-
-                    <div class="saved-item">
-
-                        <span class="saved-label">
-                            Battery Capacity
-                        </span>
-
-                        <h3>
-                            150 Ah
-                        </h3>
-
-                    </div>
-
-                </div>
-
-
-                <div class="saved-appliances">
-
-                    <h3>
-                        Saved Appliances
-                    </h3>
-
-                    <table class="appliance-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Appliance</th>
-                                <th>Quantity</th>
-                                <th>Priority</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-
-                                <td>Fan</td>
-                                <td>2</td>
-                                <td>High</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>LED Light</td>
-                                <td>4</td>
-                                <td>High</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>Television</td>
-                                <td>1</td>
-                                <td>Medium</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>WiFi Router</td>
-                                <td>1</td>
-                                <td>High</td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-                <div class="saved-input-grid">
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            Battery Voltage
-                        </label>
-
-                        <select class="form-input">
-
-                            <option>12V</option>
-                            <option>24V</option>
-                            <option>48V</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            Area
-                        </label>
-
-                        <select class="form-input">
-
-                            <option>Select Area</option>
-                            <option>Mohammadpur</option>
-                            <option>Dhanmondi</option>
-                            <option>Mirpur</option>
-                            <option>Uttara</option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================
-             TEMPORARY SETUP
-        ========================== -->
-
-        <div
-            class="temporary-setup-section hidden"
-            id="temporarySetupSection">
-
-            <div class="glass-card">
-
-                <div class="card-header">
-
-                    <h2>
-                        Temporary IPS Setup
-                    </h2>
-
-                </div>
-
-                <div class="setup-form-grid">
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            IPS Capacity
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-input"
-                            placeholder="1200">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            Battery Voltage
-                        </label>
-
-                        <select class="form-input">
-
-                            <option>12V</option>
-                            <option>24V</option>
-                            <option>48V</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            Battery Capacity (Ah)
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-input"
-                            placeholder="150">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label class="form-label">
-                            Area
-                        </label>
-
-                        <select class="form-input">
-
-                            <option>Select Area</option>
-                            <option>Mohammadpur</option>
-                            <option>Dhanmondi</option>
-                            <option>Mirpur</option>
-                            <option>Uttara</option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-                <!-- Appliance Builder starts here in Part 2 -->
-
-            </div>
-
-        </div>
-                        <!-- =========================
-                     APPLIANCE BUILDER
-                ========================== -->
-
-                <div class="appliance-builder">
-
-                    <div class="builder-header">
-
-                        <div>
-
-                            <h2>
-                                Appliance Builder
-                            </h2>
-
-                            <p>
-                                Add appliances you want to run during load shedding.
-                            </p>
-
-                        </div>
-
-                        <button
-                            type="button"
-                            class="add-appliance-btn"
-                            id="addApplianceBtn">
-
-                            + Add Appliance
-
-                        </button>
-
-                    </div>
-
-                    <div id="applianceContainer">
-
-                        <!-- Appliance Row -->
-
-                        <div class="appliance-row">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Appliance
-                                </label>
-
-                                <select class="form-input appliance-select">
-
-                                    <option>LED Light</option>
-                                    <option>Fan</option>
-                                    <option>Television</option>
-                                    <option>WiFi Router</option>
-                                    <option>Desktop PC</option>
-                                    <option>Laptop</option>
-                                    <option>Refrigerator</option>
-                                    <option>Rice Cooker</option>
-                                    <option>Air Cooler</option>
-
-                                </select>
-
-                            </div>
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Quantity
-                                </label>
-
-                                <input
-                                    type="number"
-                                    class="form-input quantity-input"
-                                    value="1"
-                                    min="1">
-
-                            </div>
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Priority
-                                </label>
-
-                                <select class="form-input">
-
-                                    <option>High</option>
-                                    <option>Medium</option>
-                                    <option>Low</option>
-
-                                </select>
-
-                            </div>
-
-                            <button
-                                type="button"
-                                class="remove-appliance-btn">
-
-                                Remove
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================
-             ANALYZE SECTION
-        ========================== -->
-
-        <div class="analyze-section">
-
-            <button
-                class="analyze-btn"
-                id="analyzeBtn">
-
-
-                Analyze My IPS
-
-            </button>
-
-            <p class="analyze-note">
-
-                AI-powered estimation based on your IPS configuration and today's
-                scheduled load shedding.
-
-            </p>
-
-        </div>
-
-
-        <!-- =========================
-             LOADING
-        ========================== -->
-
-        <div
-            class="loading-section hidden"
-            id="loadingSection">
-
-            <div class="loading-card">
-
-                <div class="loading-spinner"></div>
-
-                <h2>
-                    Analyzing Your IPS...
-                </h2>
-
-                <p>
-
-                    Calculating battery backup, load, today's schedule and
-                    optimization recommendations.
-
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- =========================
-             RESULT SECTION
-        ========================== -->
-
-        <div
-            class="analysis-dashboard hidden"
-            id="analysisDashboard">
-                        <!-- =========================
-                 TODAY'S LOAD SHEDDING
-            ========================== -->
-
-            <div class="analysis-grid">
-
-                <div class="glass-card schedule-result-card">
-
-                    <div class="card-header">
-
-                        <h2>
-                            Today's Load Shedding
-                        </h2>
-
-                        <span class="live-badge">
-                            LIVE
-                        </span>
-
-                    </div>
-
-                    <div class="schedule-info">
-
-                        <div class="info-row">
-
-                            <span>Area</span>
-
-                            <strong id="resultArea">
-                                Mohammadpur
-                            </strong>
-
-                        </div>
-
-                        <div class="info-row">
-
-                            <span>Start Time</span>
-
-                            <strong id="startTime">
-                                2:00 PM
-                            </strong>
-
-                        </div>
-
-                        <div class="info-row">
-
-                            <span>End Time</span>
-
-                            <strong id="endTime">
-                                4:00 PM
-                            </strong>
-
-                        </div>
-
-                        <div class="info-row">
-
-                            <span>Duration</span>
-
-                            <strong id="duration">
-                                2 Hours
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                    <div
-                        class="schedule-status success"
-                        id="scheduleStatus">
-
-                        Scheduled Today
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- IPS SUMMARY -->
-
-                <div class="glass-card summary-result-card">
-
-                    <div class="card-header">
-
-                        <h2>
-
-                            IPS Summary
-
-                        </h2>
-
-                    </div>
-
-                    <div class="summary-values">
-
-                        <div class="summary-item">
-
-                            <span>
-
-                                Estimated Backup
-
-                            </span>
-
-                            <h2 id="backupTime">
-
-                                5.8 Hours
-
-                            </h2>
-
-                        </div>
-
-                        <div class="summary-item">
-
-                            <span>
-
-                                Total Load
-
-                            </span>
-
-                            <h2 id="totalLoad">
-
-                                320 W
-
-                            </h2>
-
-                        </div>
-
-                    </div>
-
-                    <div
-                        class="status-badge ready"
-                        id="backupStatus">
-
-                        READY
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =========================
-                 BATTERY GAUGE
-            ========================== -->
-
-            <div class="glass-card battery-card">
-
-                <div class="card-header">
-
-                    <h2>
-
-                        Battery Health
-
-                    </h2>
-
-                </div>
-
-                <div class="battery-wrapper">
-
-                    <div class="battery-circle">
-
-                        <div class="battery-inner">
-
-                            <span
-                                class="battery-percent"
-                                id="batteryPercent">
-
-                                72%
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="battery-details">
-
-                        <h3>
-
-                            Estimated Backup
-
-                        </h3>
-
-                        <h2 id="batteryBackup">
-
-                            5 Hours 48 Minutes
-
-                        </h2>
-
-                        <p>
-
-                            Enough battery for today's scheduled outage.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =========================
-                 RECOMMENDATION
-            ========================== -->
-
-            <div class="glass-card recommendation-section">
-
-                <div class="card-header">
-
-                    <h2>
-
-                        Smart Recommendation
-
-                    </h2>
-
-                    <span>
-
-                        AI Suggestion
-
-                    </span>
-
-                </div>
-
-                <div class="recommendation-grid">
-
-                    <div class="recommend-card">
-
-                        <div class="recommend-icon">
-
-                            📺
-
-                        </div>
-
-                        <h3>
-
-                            Turn OFF TV
-
-                        </h3>
-
-                        <p>
-
-                            Save around 90W
-
-                        </p>
-
-                    </div>
-
-                    <div class="recommend-card">
-
-                        <div class="recommend-icon">
-
-                            🌀
-
-                        </div>
-
-                        <h3>
-
-                            Turn OFF One Fan
-
-                        </h3>
-
-                        <p>
-
-                            Save around 75W
-
-                        </p>
-
-                    </div>
-
-                    <div class="recommend-card">
-
-                        <div class="recommend-icon">
-
-                            🍚
-
-                        </div>
-
-                        <h3>
-
-                            Avoid Rice Cooker
-
-                        </h3>
-
-                        <p>
-
-                            Heavy power consumption
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <div class="optimized-result">
-
-                    <span>
-
-                        Estimated Backup After Recommendation
-
-                    </span>
-
-                    <h2>
-
-                        7 Hours 12 Minutes
-
-                    </h2>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =========================
-                 SUMMARY CARDS
-            ========================== -->
-
-            <div class="summary-card-grid">
-
-                <div class="mini-summary-card">
-
-                    <span>
-
-                        Total Load
-
-                    </span>
-
-                    <h2 id="summaryLoad">
-
-                        320 W
-
-                    </h2>
-
-                </div>
-
-                <div class="mini-summary-card">
-
-                    <span>
-
-                        Appliances
-
-                    </span>
-
-                    <h2 id="summaryAppliance">
-
-                        8
-
-                    </h2>
-
-                </div>
-
-                <div class="mini-summary-card">
-
-                    <span>
-
-                        Runtime
-
-                    </span>
-
-                    <h2 id="summaryRuntime">
-
-                        5.8 H
-
-                    </h2>
-
-                </div>
-
-                <div class="mini-summary-card">
-
-                    <span>
-
-                        Battery
-
-                    </span>
-
-                    <h2 id="summaryBattery">
-
-                        150 Ah
-
-                    </h2>
-
-                </div>
-
-            </div>
-
-        </div>
+</form>
 
     </div>
-
 </section>
 
 {% endblock %}
