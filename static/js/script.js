@@ -2,52 +2,32 @@
    PROFILE DROPDOWN
 ========================== */
 
-const profileBtn =
-document.getElementById(
-  "profileBtn"
-);
+const profileBtn = document.getElementById("profileBtn");
+const profileDropdown = document.getElementById("profileDropdown");
 
-const profileDropdown =
-document.getElementById(
-  "profileDropdown"
-);
+if (profileBtn && profileDropdown) {
 
-/* only if profile exists */
-if(profileBtn && profileDropdown){
+    profileBtn.addEventListener("click", function (e) {
 
-  profileBtn.addEventListener(
-    "click",
-    () => {
+        e.stopPropagation();
 
-      profileDropdown.classList.toggle(
-        "show"
-      );
+        profileDropdown.classList.toggle("show");
 
-    }
-  );
+    });
 
-  document.addEventListener(
-    "click",
-    (event) => {
+    document.addEventListener("click", function (e) {
 
-      if(
-        !profileBtn.contains(
-          event.target
-        )
-        &&
-        !profileDropdown.contains(
-          event.target
-        )
-      ){
+        if (
+            !profileBtn.contains(e.target) &&
+            !profileDropdown.contains(e.target)
+        ) {
 
-        profileDropdown.classList.remove(
-          "show"
-        );
+            profileDropdown.classList.remove("show");
 
-      }
+        }
 
-    }
-  );
+    });
+
 }
 
 
@@ -55,455 +35,730 @@ if(profileBtn && profileDropdown){
    DJANGO MESSAGE POPUP
 ========================== */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
+document.addEventListener("DOMContentLoaded", function () {
 
     const messages =
-    document.querySelectorAll(
-      ".django-message"
-    );
+        document.querySelectorAll(".django-message");
 
-    messages.forEach(
-      function(message){
+    messages.forEach(function (message) {
 
-        const text =
-        message.dataset.message;
+        const popup = document.createElement("div");
+
+        popup.classList.add("alert-popup");
 
         const tag =
-        message.dataset.tag;
+            message.dataset.tag || "";
 
-        const popup =
-        document.createElement(
-          "div"
-        );
+        if (tag.includes("error")) {
 
-        popup.classList.add(
-          "alert-popup"
-        );
+            popup.classList.add("alert-error");
 
-        if(tag.includes("error")){
-          popup.classList.add(
-            "alert-error"
-          );
         }
 
-        if(tag.includes("success")){
-          popup.classList.add(
-            "alert-success"
-          );
+        if (tag.includes("success")) {
+
+            popup.classList.add("alert-success");
+
         }
 
         popup.innerText =
-        text;
+            message.dataset.message;
 
-        document.body.appendChild(
-          popup
-        );
+        document.body.appendChild(popup);
 
-        setTimeout(
-          function(){
+        setTimeout(function () {
 
-            popup.style.opacity =
-            "0";
-
+            popup.style.opacity = "0";
             popup.style.transform =
-            "translateX(100px)";
+                "translateX(100px)";
 
-          },
-          2500
-        );
+        }, 2500);
 
-        setTimeout(
-          function(){
+        setTimeout(function () {
 
             popup.remove();
 
-          },
-          3000
-        );
+        }, 3000);
 
-      }
-    );
-  }
-);
+    });
+
+});
+
+
 /* ==========================
    GUEST NAVBAR PROTECTION
 ========================== */
 
 const authStatus =
-document.getElementById(
-  "authStatus"
-);
+    document.getElementById("authStatus");
 
-const protectedLinks =
-document.querySelectorAll(
-  ".protected-link"
-);
+if (authStatus) {
 
-if(authStatus){
+    const isLoggedIn =
+        authStatus.dataset.auth;
 
-  const isLoggedIn =
-  authStatus.dataset.auth;
+    document
+        .querySelectorAll(".protected-link")
+        .forEach(function (link) {
 
-  if(isLoggedIn === "false"){
+            if (isLoggedIn === "false") {
 
-    protectedLinks.forEach(
-      (link)=>{
+                link.addEventListener(
+                    "click",
+                    function (e) {
 
-        link.addEventListener(
-          "click",
-          function(event){
+                        e.preventDefault();
 
-            event.preventDefault();
+                        alert(
+                            "Please login first."
+                        );
 
-            alert(
-              "Please login first"
-            );
+                    }
+                );
 
-          }
-        );
+            }
 
-      }
-    );
-
-  }
+        });
 
 }
+
+
 /* ==========================
-   SCHEDULE PAGE
+   SCHEDULE BUTTON
 ========================== */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
+document.addEventListener("DOMContentLoaded", function () {
 
     const button =
-    document.querySelector(
-      ".schedule-btn"
-    );
+        document.querySelector(".schedule-btn");
 
-    if(!button) return;
+    if (!button) return;
 
-    button.addEventListener(
-      "click",
-      function(){
+    button.addEventListener("click", function () {
 
-        button.innerHTML =
-        "Loading...";
+        button.innerHTML = "Loading...";
 
-        setTimeout(
-          function(){
+        setTimeout(function () {
 
             button.innerHTML =
-            "View Schedule";
+                "View Schedule";
 
             document
-            .getElementById(
-              "scheduleResults"
-            )
-            ?.scrollIntoView({
-              behavior:"smooth"
-            });
+                .getElementById("scheduleResults")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                });
 
-          },
-          700
-        );
+        }, 700);
 
-      }
-    );
+    });
 
-  }
-);
-/* ==========================
-   AJAX SCHEDULE FILTER
-========================== */
+});
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
 
-    const districtSelect =
-    document.getElementById(
-      "district"
-    );
+/* ==========================================================
+   REUSABLE DISTRICT → UPAZILA → AREA
+========================================================== */
 
-    const upazilaSelect =
-    document.getElementById(
-      "upazila"
-    );
+function bindAreaCascade(
+    districtId,
+    upazilaId,
+    areaId
+) {
 
-    const areaSelect =
-    document.getElementById(
-      "area"
-    );
+    const district =
+        document.getElementById(districtId);
 
-    if(
-      !districtSelect ||
-      !upazilaSelect ||
-      !areaSelect
-    ){
-      return;
+    const upazila =
+        document.getElementById(upazilaId);
+
+    const area =
+        document.getElementById(areaId);
+
+    if (!district || !upazila || !area) {
+        return;
     }
 
-    districtSelect.addEventListener(
-      "change",
-      function(){
+    district.addEventListener("change", function () {
 
-        const district =
-        this.value;
+        upazila.innerHTML =
+            `<option value="">Select Upazila</option>`;
 
-        fetch(
-          `/ajax/get-upazilas/?district=${district}`
-        )
+        area.innerHTML =
+            `<option value="">Select Area</option>`;
 
-        .then(
-          response =>
-          response.json()
-        )
-
-        .then(
-          data => {
-
-            upazilaSelect.innerHTML =
-            `
-            <option value="">
-            Select Upazila
-            </option>
-            `;
-
-            areaSelect.innerHTML =
-            `
-            <option value="">
-            Select Area
-            </option>
-            `;
-
-            data.upazilas.forEach(
-              function(upazila){
-
-                upazilaSelect.innerHTML +=
-                `
-                <option value="${upazila}">
-                ${upazila}
-                </option>
-                `;
-
-              }
-            );
-
-          }
-        );
-
-      }
-    );
-
-    upazilaSelect.addEventListener(
-      "change",
-      function(){
-
-        const district =
-        districtSelect.value;
-
-        const upazila =
-        this.value;
+        if (!this.value) return;
 
         fetch(
-          `/ajax/get-areas/?district=${district}&upazila=${upazila}`
+            `/ajax/get-upazilas/?district=${encodeURIComponent(this.value)}`
         )
 
-        .then(
-          response =>
-          response.json()
+            .then(res => res.json())
+
+            .then(data => {
+
+                data.upazilas.forEach(function (item) {
+
+                    upazila.innerHTML +=
+                        `<option value="${item}">
+                            ${item}
+                        </option>`;
+
+                });
+
+            });
+
+    });
+
+    upazila.addEventListener("change", function () {
+
+        area.innerHTML =
+            `<option value="">Select Area</option>`;
+
+        if (!this.value) return;
+
+        fetch(
+            `/ajax/get-areas/?district=${encodeURIComponent(district.value)}&upazila=${encodeURIComponent(this.value)}`
         )
 
-        .then(
-          data => {
+            .then(res => res.json())
 
-            areaSelect.innerHTML =
-            `
-            <option value="">
-            Select Area
-            </option>
-            `;
+            .then(data => {
 
-            data.areas.forEach(
-              function(area){
+                data.areas.forEach(function (item) {
 
-                areaSelect.innerHTML +=
-                `
-                <option value="${area.id}">
-                ${area.area_name}
-                </option>
-                `;
+                    area.innerHTML +=
+                        `<option value="${item.id}">
+                            ${item.area_name}
+                        </option>`;
 
-              }
-            );
+                });
 
-          }
-        );
+            });
 
-      }
+    });
+
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    bindAreaCascade(
+        "district",
+        "upazila",
+        "area"
     );
 
-  }
-);
+    bindAreaCascade(
+        "savedDistrict",
+        "savedUpazila",
+        "savedArea"
+    );
+
+});
 /* ==========================
    SAVE SETUP MODAL
 ========================== */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
+document.addEventListener("DOMContentLoaded", function () {
 
-    const openButtons =
-    document.querySelectorAll(
-      "#openSetupModal, .open-setup-modal"
+    const openButtons = document.querySelectorAll(
+        "#openSetupModal, .open-setup-modal"
     );
 
     const modal =
-    document.getElementById(
-      "setupModal"
-    );
+        document.getElementById("setupModal");
 
     const closeBtn =
-    document.getElementById(
-      "closeSetupModal"
-    );
+        document.getElementById("closeSetupModal");
 
-    if(
-      !openButtons.length ||
-      !modal
-    ){
-      return;
+    if (!modal || openButtons.length === 0) {
+        return;
     }
 
-    openButtons.forEach(
-      function(openBtn){
+    openButtons.forEach(function (button) {
 
-        openBtn.addEventListener(
-          "click",
-          function(event){
+        button.addEventListener("click", function (event) {
 
             event.preventDefault();
 
-            modal.classList.add(
-              "show"
-            );
-            fetch(
-              "/users/get-saved-setup/"
-            )
+            modal.classList.add("show");
 
-            .then(
-              response =>
-              response.json()
-            )
+            fetch("/users/get-saved-setup/")
 
-            .then(
-              data => {
+                .then(function (response) {
 
-                if(
-                  !data.success
-                ){
-                  return;
-                }
+                    return response.json();
 
-                document.querySelector(
-                  '[name="ips_capacity"]'
-                ).value =
-                data.ips_capacity;
+                })
 
-              }
-            );
-          }
-        );
-      }
-    );
+                .then(function (data) {
 
-    closeBtn.addEventListener(
-      "click",
-      function(){
+                    if (!data.success) {
+                        return;
+                    }
 
-        modal.classList.remove(
-          "show"
-        );
+                    const ips =
+                        document.querySelector(
+                            '[name="ips_capacity"]'
+                        );
 
-      }
-    );
+                    if (ips) {
+                        ips.value = data.ips_capacity;
+                    }
 
-    modal.addEventListener(
-      "click",
-      function(event){
+                });
 
-        if(
-          event.target === modal
-        ){
+        });
 
-          modal.classList.remove(
-            "show"
-          );
+    });
+
+    if (closeBtn) {
+
+        closeBtn.addEventListener("click", function () {
+
+            modal.classList.remove("show");
+
+        });
+
+    }
+
+    modal.addEventListener("click", function (event) {
+
+        if (event.target === modal) {
+
+            modal.classList.remove("show");
 
         }
 
-      }
-    );
+    });
 
-  }
-);
+});
+
+
 /* ==========================
-   ADD APPLIANCE
+   ADD APPLIANCE (MODAL)
 ========================== */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
+document.addEventListener("DOMContentLoaded", function () {
 
     const addBtn =
-    document.getElementById(
-      "addAppliance"
-    );
+        document.getElementById("addAppliance");
 
     const container =
-    document.getElementById(
-      "applianceContainer"
+        document.getElementById("applianceContainer");
+
+    if (!addBtn || !container) {
+        return;
+    }
+
+    addBtn.addEventListener("click", function () {
+
+        const firstItem =
+            container.querySelector(".appliance-item");
+
+        if (!firstItem) {
+            return;
+        }
+
+        const clone =
+            firstItem.cloneNode(true);
+
+        clone.querySelectorAll("input").forEach(function (input) {
+
+            input.value = "";
+
+        });
+
+        clone.querySelectorAll("select").forEach(function (select) {
+
+            select.selectedIndex = 0;
+
+        });
+
+        container.appendChild(clone);
+
+    });
+
+});
+
+
+/* ==========================================================
+   SMART IPS ADVISOR
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    initializeAdvisor();
+
+});
+
+function initializeAdvisor() {
+
+    setupSelection();
+
+    applianceEvents();
+
+    bindAnalyzeSubmit();
+
+}
+/* ==========================================================
+   SETUP SELECTION
+========================================================== */
+
+function setupSelection() {
+
+    const savedCard =
+        document.getElementById("savedSetupCard");
+
+    const tempCard =
+        document.getElementById("temporarySetupCard");
+
+    const savedSection =
+        document.getElementById("savedSetupSection");
+
+    const tempSection =
+        document.getElementById("temporarySetupSection");
+
+    const modeInput =
+        document.getElementById("modeInput");
+
+    if (
+        !savedCard ||
+        !tempCard ||
+        !savedSection ||
+        !tempSection
+    ) {
+        return;
+    }
+
+    const savedRequired = savedSection.querySelectorAll(
+        "[name='battery_capacity']"
     );
 
-    if(
-      !addBtn ||
-      !container
-    ){
-      return;
+    const tempRequired = tempSection.querySelectorAll(
+        "[name='ips_capacity'],[name='battery_capacity_temp']"
+    );
+
+    function enableSaved() {
+
+        savedCard.classList.add("active");
+        tempCard.classList.remove("active");
+
+        savedSection.classList.remove("hidden");
+        tempSection.classList.add("hidden");
+
+        if (modeInput) {
+            modeInput.value = "saved";
+        }
+
+        savedRequired.forEach(input => {
+            input.required = true;
+        });
+
+        tempRequired.forEach(input => {
+            input.required = false;
+        });
+
+    }
+
+    function enableTemporary() {
+
+        tempCard.classList.add("active");
+        savedCard.classList.remove("active");
+
+        tempSection.classList.remove("hidden");
+        savedSection.classList.add("hidden");
+
+        if (modeInput) {
+            modeInput.value = "temporary";
+        }
+
+        tempRequired.forEach(input => {
+            input.required = true;
+        });
+
+        savedRequired.forEach(input => {
+            input.required = false;
+        });
+
+    }
+
+    enableSaved();
+
+    savedCard.addEventListener(
+        "click",
+        enableSaved
+    );
+
+    tempCard.addEventListener(
+        "click",
+        enableTemporary
+    );
+
+}
+
+
+/* ==========================================================
+   APPLIANCE BUILDER
+========================================================== */
+
+function applianceEvents() {
+
+    const addBtn =
+        document.getElementById("addApplianceBtn");
+
+    if (!addBtn) {
+        return;
     }
 
     addBtn.addEventListener(
-      "click",
-      function(){
-
-        const firstItem =
-        document.querySelector(
-          ".appliance-item"
-        );
-
-        const clone =
-        firstItem.cloneNode(
-          true
-        );
-
-        clone
-        .querySelectorAll(
-          "input"
-        )
-        .forEach(
-          input =>
-          input.value = ""
-        );
-
-        container.appendChild(
-          clone
-        );
-
-      }
+        "click",
+        addAppliance
     );
 
-  }
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target.classList.contains(
+                    "remove-appliance-btn"
+                )
+            ) {
+
+                removeAppliance(
+                    event.target
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+function addAppliance() {
+
+    const container =
+        document.getElementById(
+            "applianceContainer"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const firstRow =
+        container.querySelector(
+            ".appliance-row"
+        );
+
+    if (!firstRow) {
+        return;
+    }
+
+    const clone =
+        firstRow.cloneNode(true);
+
+    clone.querySelectorAll("input")
+        .forEach(function (input) {
+
+            if (input.type === "number") {
+
+                input.value = 1;
+
+            } else {
+
+                input.value = "";
+
+            }
+
+        });
+
+    clone.querySelectorAll("select")
+        .forEach(function (select) {
+
+            select.selectedIndex = 0;
+
+        });
+
+    clone.style.opacity = "0";
+    clone.style.transform =
+        "translateY(15px)";
+
+    container.appendChild(clone);
+
+    requestAnimationFrame(function () {
+
+        clone.style.transition = ".35s";
+
+        clone.style.opacity = "1";
+
+        clone.style.transform =
+            "translateY(0)";
+
+    });
+
+}
+
+
+function removeAppliance(button) {
+
+    const rows =
+        document.querySelectorAll(
+            ".appliance-row"
+        );
+
+    if (rows.length <= 1) {
+        return;
+    }
+
+    const row =
+        button.closest(".appliance-row");
+
+    if (!row) {
+        return;
+    }
+
+    row.style.opacity = "0";
+
+    row.style.transform =
+        "translateX(40px)";
+
+    setTimeout(function () {
+
+        row.remove();
+
+    }, 300);
+
+}
+/* ==========================================================
+   ANALYZE BUTTON
+========================================================== */
+
+function bindAnalyzeSubmit() {
+
+    const form =
+        document.getElementById(
+            "calculatorForm"
+        );
+
+    const loadingSection =
+        document.getElementById(
+            "loadingSection"
+        );
+
+    const analyzeSection =
+        document.querySelector(
+            ".analyze-section"
+        );
+
+    const dashboard =
+        document.getElementById(
+            "analysisDashboard"
+        );
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            if (!form.checkValidity()) {
+
+                form.reportValidity();
+
+                return;
+
+            }
+
+            event.preventDefault();
+
+            if (analyzeSection) {
+
+                analyzeSection.style.display =
+                    "none";
+
+            }
+
+            if (dashboard) {
+
+                dashboard.classList.add(
+                    "hidden"
+                );
+
+            }
+
+            if (loadingSection) {
+
+                loadingSection.classList.remove(
+                    "hidden"
+                );
+
+                loadingSection.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "center",
+
+                });
+
+            }
+
+            setTimeout(function () {
+
+                form.submit();
+
+            }, 900);
+
+        }
+
+    );
+
+}
+
+
+/* ==========================================================
+   RESULT ANIMATION
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const dashboard =
+            document.getElementById(
+                "analysisDashboard"
+            );
+
+        if (
+            dashboard &&
+            !dashboard.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            dashboard.style.opacity = "0";
+
+            dashboard.style.transform =
+                "translateY(20px)";
+
+            requestAnimationFrame(function () {
+
+                dashboard.style.transition =
+                    ".45s ease";
+
+                dashboard.style.opacity = "1";
+
+                dashboard.style.transform =
+                    "translateY(0)";
+
+            });
+
+        }
+
+    }
 );

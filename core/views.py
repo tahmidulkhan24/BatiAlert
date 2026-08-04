@@ -1,7 +1,6 @@
 import csv
 from io import TextIOWrapper
 from datetime import date, timedelta, datetime
-
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -12,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .models import *
+from users.models import *
 
 
 WEEK_DAYS = [
@@ -536,6 +536,301 @@ def get_areas(request):
             'areas': areas
         }
     )
+@login_required
+def calculator(request):
+
+    # ==========================
+    # USER DATA
+    # ==========================
+
+    saved_setup = SavedSetup.objects.filter(
+        user=request.user
+    ).first()
+
+    profile = UserProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    appliances = []
+
+    if saved_setup:
+        appliances = (
+            SetupAppliance.objects
+            .filter(setup=saved_setup)
+            .select_related("appliance")
+        )
+
+    districts = (
+        Area.objects
+        .values_list("district", flat=True)
+        .distinct()
+        .order_by("district")
+    )
+
+    appliances_list = (
+        Appliance.objects
+        .all()
+        .order_by("name")
+    )
+
+    result = None
+
+    # ==========================
+    # POST
+    # ==========================
+
+    if request.method == "POST":
+
+        mode = request.POST.get("mode", "saved")
+
+        total_load = 0
+        total_appliance = 0
+        recommendations = []
+        schedule = None
+        battery_percent = 0
+        battery_message = ""
+
+        def safe_int(value, default=0):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return default
+
+        if mode == "saved":
+
+            if not saved_setup:
+                # no saved setup exists - just skip silently, don't crash
+                voltage = 12
+                battery_ah = 0
+                rows = []
+                area = None
+            else:
+
+                voltage = safe_int(
+                    request.POST.get("battery_voltage"), 12
+                )
+
+                battery_ah = safe_int(
+                    request.POST.get("battery_capacity"), 0
+                )
+
+                rows = (
+                    SetupAppliance.objects
+                    .filter(setup=saved_setup)
+                    .select_related("appliance")
+                )
+
+                area = Area.objects.filter(
+                    id=request.POST.get("area_saved")
+                ).first()
+
+            if not saved_setup:
+                messages.error(
+                    request,
+                    "You don't have a saved IPS setup yet."
+                )
+                return render(
+                    request,
+                    "calculator.html",
+                    {
+                        "saved_setup": saved_setup,
+                        "profile": profile,
+                        "appliances": appliances,
+                        "districts": districts,
+                        "appliances_list": appliances_list,
+                        "result": None,
+                    }
+                )
+
+            voltage = safe_int(
+                request.POST.get("battery_voltage"), 12
+            )
+
+            battery_ah = safe_int(
+                request.POST.get("battery_capacity"), 0
+            )
+
+            rows = (
+                SetupAppliance.objects
+                .filter(setup=saved_setup)
+                .select_related("appliance")
+            )
+
+            # Area now comes from user input (saved section dropdown)
+            area = Area.objects.filter(
+                id=request.POST.get("area_saved")
+            ).first()
+
+        else:
+
+            voltage = safe_int(
+                request.POST.get("battery_voltage_temp"), 12
+            )
+
+            battery_ah = safe_int(
+                request.POST.get("battery_capacity_temp"), 0
+            )
+
+            area = Area.objects.filter(
+                id=request.POST.get("area")
+            ).first()
+
+            rows = []
+
+            appliance_ids = request.POST.getlist("appliance[]")
+            quantities = request.POST.getlist("quantity[]")
+            priorities = request.POST.getlist("priority[]")
+
+            for appliance_id, quantity, priority in zip(
+                appliance_ids, quantities, priorities
+            ):
+                appliance_obj = Appliance.objects.filter(
+                    id=appliance_id
+                ).first()
+
+                if not appliance_obj:
+                    continue
+
+                rows.append({
+                    "appliance": appliance_obj,
+                    "quantity": safe_int(quantity, 1),
+                    "priority": safe_int(priority, 2),
+                })
+
+        # ==========================
+        # LOAD
+        # ==========================
+
+        for row in rows:
+
+            if mode == "saved":
+                appliance = row.appliance
+                quantity = row.quantity
+                priority = row.priority
+            else:
+                appliance = row["appliance"]
+                quantity = row["quantity"]
+                priority = row["priority"]
+
+            total_appliance += quantity
+            total_load += appliance.watt * quantity
+
+            if priority == 3:
+                recommendations.append(appliance.name)
+
+        usable_power = voltage * battery_ah * 0.85
+
+        if total_load > 0:
+            backup_time = round(usable_power / total_load, 2)
+        else:
+            backup_time = 0
+
+        # ==========================
+        # TODAY'S SCHEDULE
+        # ==========================
+
+        if area:
+            today = date.today()
+            today_day = today.strftime("%A")
+
+            schedule = (
+                Schedule.objects.filter(area=area)
+                .filter(
+                    Q(schedule_type="Daily")
+                    |
+                    Q(schedule_type="Weekly", day_of_week=today_day)
+                )
+                .order_by("start_time")
+                .first()
+            )
+
+        # ==========================
+        # BATTERY STATUS
+        # ==========================
+
+        if backup_time >= 5:
+            status = "READY"
+            battery_message = "Enough battery for today's scheduled outage."
+        elif backup_time >= 3:
+            status = "Needs Optimization"
+            battery_message = "Battery is enough but optimization is recommended."
+        else:
+            status = "Backup Not Enough"
+            battery_message = "Battery backup is not enough for today's outage."
+
+        battery_percent = min(100, round((backup_time / 8) * 100))
+
+        # ==========================
+        # RECOMMENDATION
+        # ==========================
+
+        recommendation_text = []
+
+        for appliance_name in recommendations:
+            recommendation_text.append(f"Turn OFF {appliance_name}")
+
+        if len(recommendation_text) == 0:
+            recommendation_text.append("Your current setup is already optimized.")
+
+        # ==========================
+        # DURATION
+        # ==========================
+
+        duration = "--"
+
+        if schedule:
+            start = datetime.combine(date.today(), schedule.start_time)
+            end = datetime.combine(date.today(), schedule.end_time)
+            diff = end - start
+
+            total_minutes = diff.seconds // 60
+            hours = total_minutes // 60
+            minutes = total_minutes % 60
+
+            if hours > 0 and minutes > 0:
+                duration = f"{hours}h {minutes}m"
+            elif hours > 0:
+                duration = f"{hours} Hours"
+            else:
+                duration = f"{minutes} Minutes"
+
+        # ==========================
+        # RESULT
+        # ==========================
+
+        result = {
+            "schedule": {
+                "area": area.area_name if area else "--",
+                "start_time": schedule.start_time if schedule else "--",
+                "end_time": schedule.end_time if schedule else "--",
+                "duration": duration,
+            },
+            "total_load": total_load,
+            "backup_time": backup_time,
+            "status": status,
+            "battery_percent": battery_percent,
+            "battery_message": battery_message,
+            "recommendation": recommendation_text,
+            "total_appliance": total_appliance,
+            "battery_capacity": battery_ah,
+        }
+
+    # ==========================
+    # CONTEXT
+    # ==========================
+
+    context = {
+        "saved_setup": saved_setup,
+        "profile": profile,
+        "appliances": appliances,
+        "districts": districts,
+        "appliances_list": appliances_list,
+        "result": result,
+    }
+
+    return render(request, "calculator.html", context)
+
+ 
 
 
 @login_required(login_url="login")

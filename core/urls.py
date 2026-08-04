@@ -7,6 +7,8 @@ urlpatterns = [
         views.home,
         name='home'
     ),
+    path('notice/', views.notice_view, name='notices'),path('home/', views.home, name='home'),
+
 
     path(
         'home/',
@@ -36,6 +38,11 @@ urlpatterns = [
         'notice/',
         views.notice_view,
         name='notices'
+    ),
+    path(
+        'calculator/',
+        views.calculator,
+        name='calculator'
     ),
     path(
         'feedback/',
