@@ -699,22 +699,41 @@ def calculator(request):
         # LOAD
         # ==========================
 
+        # ==========================
+# LOAD
+# ==========================
+
         for row in rows:
 
             if mode == "saved":
+
                 appliance = row.appliance
                 quantity = row.quantity
                 priority = row.priority
+
+                # Use custom watt if user has set one
+                if row.custom_watt:
+                    watt = row.custom_watt
+                else:
+                    watt = appliance.watt
+
             else:
+
                 appliance = row["appliance"]
                 quantity = row["quantity"]
                 priority = row["priority"]
 
+                # Temporary setup uses appliance default watt
+                watt = appliance.watt
+
             total_appliance += quantity
-            total_load += appliance.watt * quantity
+
+            total_load += watt * quantity
 
             if priority == 3:
-                recommendations.append(appliance.name)
+                recommendations.append(
+                    appliance.name
+                )
 
         usable_power = voltage * battery_ah * 0.85
 
