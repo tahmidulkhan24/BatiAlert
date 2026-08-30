@@ -3924,3 +3924,60 @@ body{
     grid-template-columns:1fr;
   }
 }
+/* Fix schedule form field overlap */
+.management-form {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px 26px;
+    align-items: end;
+}
+
+.management-form > label {
+    min-width: 0;
+    width: 100%;
+}
+
+.management-form .form-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Reason takes 2 columns */
+.management-form .wide-field {
+    grid-column: span 2;
+}
+
+.day-checks {
+    grid-column: 1 / -1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Button */
+.management-form .schedule-btn {
+    grid-column: 1 / -1;
+    width: fit-content;
+}
+
+/* Smaller screens */
+@media (max-width: 900px) {
+    .management-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .management-form .wide-field {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .management-form {
+        grid-template-columns: 1fr;
+    }
+
+    .management-form .wide-field {
+        grid-column: span 1;
+    }
+}

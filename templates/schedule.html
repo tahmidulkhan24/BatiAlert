@@ -170,57 +170,79 @@
                 </div>
                 {% endif %}
 
-                {% if next_outage %}
+                {% if power_status and power_status.is_power_off %}
 
-                <div class="countdown-time">
+    <!-- CURRENT OUTAGE -->
 
-                     {{ countdown }}
+    <div class="countdown-time">
+        Power OFF
+    </div>
 
-                </div>
+    <div class="outage-meta">
 
-                <div class="outage-meta">
+        <div>
+            <small>Started</small>
+            <h3>
+                {{ power_status.current_outage.start_time }}
+            </h3>
+        </div>
 
-                    <div>
+        <div>
+            <small>Ends</small>
+            <h3>
+                {{ power_status.current_outage.end_time }}
+            </h3>
+        </div>
 
-                        <small>Start</small>
+        <div>
+            <small>Reason</small>
+            <h3>
+                {{ power_status.current_outage.reason|default:"N/A" }}
+            </h3>
+        </div>
 
-                        <h3>
-                            {{ next_outage.start_time}}
-                        </h3>
+    </div>
 
-                    </div>
+{% elif next_outage %}
 
-                    <div>
+    <!-- NEXT OUTAGE -->
 
-                        <small>End</small>
+    <div class="countdown-time">
+        {{ countdown }}
+    </div>
 
-                        <h3>
-                            {{ next_outage.end_time }}
-                        </h3>
+    <div class="outage-meta">
 
-                    </div>
+        <div>
+            <small>Start</small>
+            <h3>
+                {{ next_outage.start_time }}
+            </h3>
+        </div>
 
-                    <div>
+        <div>
+            <small>End</small>
+            <h3>
+                {{ next_outage.end_time }}
+            </h3>
+        </div>
 
-                        <small>Reason</small>
+        <div>
+            <small>Reason</small>
+            <h3>
+                {{ next_outage.reason|default:"N/A" }}
+            </h3>
+        </div>
 
-                        <h3>
-                             {{ next_outage.reason|default:"N/A" }}
-                        </h3>
+    </div>
 
-                    </div>
+{% else %}
 
-                </div>
+    <div class="countdown-time">
+        No Upcoming Outage
+    </div>
 
-                {% else %}
-
-                <div class="countdown-time">
-
-                    No Outage
-
-                </div>
-
-                {% endif %}
+{% endif %}
 
             </div>
 

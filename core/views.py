@@ -381,30 +381,28 @@ def schedule(request):
                 break
         if next_outage:
 
-            outage_datetime = timezone.make_aware(datetime.combine(
-                today,
-                next_outage.start_time
-            ))
-
-            diff = (
-                outage_datetime - now
+            outage_datetime = timezone.make_aware(
+                datetime.combine(
+                    today,
+                    next_outage.start_time
+                ),
+                timezone.get_current_timezone()
             )
 
-            total_seconds = int(
-                diff.total_seconds()
+            diff = outage_datetime - now
+
+            total_seconds = max(
+                0,
+                int(diff.total_seconds())
             )
 
-            hours = (
-                total_seconds // 3600
-            )
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
 
-            minutes = (
-                total_seconds % 3600
-            ) // 60
-
-            countdown = (
-                f"{hours}h {minutes}m"
-            )
+            if hours > 0:
+                countdown = f"{hours}h {minutes}m"
+            else:
+                countdown = f"{minutes}m"
 
     weekly_calendar = []
 
